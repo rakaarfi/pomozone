@@ -4,6 +4,11 @@ import { create } from 'zustand';
 // Tipe untuk mode timer
 type TimerMode = 'focus' | 'shortBreak' | 'longBreak';
 
+export interface Checkpoint {
+    message: string;
+    timestamp: string; // Kita akan simpan sebagai ISO string
+}
+
 // 1. Definisikan tipe data untuk state kita (apa saja yang perlu disimpan)
 interface TimerState {
     mode: TimerMode;
@@ -16,6 +21,8 @@ interface TimerState {
         longBreak: number; // Durasi dalam menit
     };
     isChallengeModalOpen: boolean;
+    isCheckpointModalOpen: boolean;
+    checkpoints: Checkpoint[];
 }
 
 // 2. Definisikan tipe data untuk aksi kita (fungsi untuk mengubah state)
@@ -25,8 +32,11 @@ interface TimerActions {
     decrementTime: () => void;
     switchMode: (newMode: TimerMode) => void;
     resetTimer: () => void;
-    openChallengeModal: () => void; // <-- Aksi baru
-    closeChallengeModal: () => void; // <-- Aksi baru
+    openChallengeModal: () => void;
+    closeChallengeModal: () => void;
+    openCheckpointModal: () => void;
+    closeCheckpointModal: () => void;
+    addCheckpoint: (message: string) => void;
 }
 
 // Nilai awal untuk state kita
@@ -40,8 +50,10 @@ const initialState: TimerState = {
         longBreak: 15,
     },
     // Waktu awal diatur sesuai mode 'focus' dalam detik
-    timeLeft: 3,
-    isChallengeModalOpen: false, // <-- Nilai awal
+    timeLeft: 25 * 60,
+    isChallengeModalOpen: false,
+    isCheckpointModalOpen: false,
+    checkpoints: [],
 };
 
 // 3. Gabungkan semuanya dan buat store
@@ -61,13 +73,41 @@ export const useTimerStore = create<TimerState & TimerActions>((set, get) => ({
         }
     },
 
+    openCheckpointModal: () => set({ isCheckpointModalOpen: true }),
+
+    closeCheckpointModal: () => {
+        set({ isCheckpointModalOpen: false });
+        // Setelah checkpoint ditutup, selalu buka modal challenge untuk long break
+        get().openChallengeModal();
+    },
+
+    addCheckpoint: (message: string) => {
+        const newCheckpoint: Checkpoint = {
+            message,
+            timestamp: new Date().toISOString(),
+        };
+        set((state) => ({
+            checkpoints: [...state.checkpoints, newCheckpoint],
+        }));
+    },
+
+    openChallengeModal: () => set({ isChallengeModalOpen: true }),
+    closeChallengeModal: () => set({ isChallengeModalOpen: false }),
+
     switchMode: (newMode: TimerMode) => {
-        const { settings, mode: currentMode, sessionsCompleted } = get();
+        const { settings, mode: currentMode, sessionsCompleted, openCheckpointModal, openChallengeModal } = get();
         let newSessionsCompleted = sessionsCompleted;
 
-        // Tambah sesi hanya jika kita selesai dari mode 'focus'
         if (currentMode === 'focus') {
             newSessionsCompleted += 1;
+        }
+
+        if (currentMode === 'focus' && (newSessionsCompleted % 4 === 0)) {
+            // Kasus 1: Sesi ke-4 selesai. Buka HANYA Checkpoint.
+            openCheckpointModal();
+        } else if (newMode === 'shortBreak' || newMode === 'longBreak') {
+            // Kasus 2: Break biasa. Langsung buka Challenge.
+            openChallengeModal();
         }
 
         let newTimeLeft = 0;
@@ -84,10 +124,8 @@ export const useTimerStore = create<TimerState & TimerActions>((set, get) => ({
                 break;
         }
 
-        if (newMode === 'shortBreak' || newMode === 'longBreak') {
-            set({ isChallengeModalOpen: true });
-        }
 
+        // Pembaruan state terakhir yang bersih
         set({
             mode: newMode,
             isRunning: false,
@@ -96,12 +134,11 @@ export const useTimerStore = create<TimerState & TimerActions>((set, get) => ({
         });
     },
 
-    openChallengeModal: () => set({ isChallengeModalOpen: true }),
-    closeChallengeModal: () => set({ isChallengeModalOpen: false }),
-
     resetTimer: () => {
-        // Untuk mereset, kita hanya perlu switch ke mode yang sedang aktif
         const currentMode = get().mode;
-        get().switchMode(currentMode);
-    }
+        set((state) => ({
+            isRunning: false,
+            timeLeft: state.settings[currentMode] * 60,
+        }));
+    },
 }));
