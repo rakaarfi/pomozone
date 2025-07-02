@@ -9,6 +9,7 @@ import { formatTime } from '../lib/utils'; // Impor dari file utilitas
 import { ChallengeModal } from '@/components/core/ChallengeModal';
 import { CheckpointModal } from '@/components/core/CheckpointModal';
 import Link from 'next/link';
+import { SettingsModal } from '../components/core/SettingsModal';
 
 export default function Home() {
   useTimer();
@@ -19,12 +20,22 @@ export default function Home() {
   const startTimer = useTimerStore((state) => state.startTimer);
   const pauseTimer = useTimerStore((state) => state.pauseTimer);
   const resetTimer = useTimerStore((state) => state.resetTimer);
+  const openSettingsModal = useTimerStore((state) => state.openSettingsModal);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-12">
-      <Link href="/stats" className="absolute top-4 right-4 rounded-md bg-white/10 px-4 py-2 text-sm font-bold text-[--text] transition-colors hover:bg-white/20">
-        Stats →
-      </Link>
+
+      <div className="absolute top-4 right-4 flex gap-2">
+        <button
+          onClick={openSettingsModal}
+          className="rounded-md bg-white/10 px-4 py-2 text-sm font-bold text-[--text] transition-colors hover:bg-white/20"
+        >
+          Settings
+        </button>
+        <Link href="/stats" className="rounded-md bg-white/10 px-4 py-2 text-sm font-bold text-[--text] transition-colors hover:bg-white/20">
+          Stats →
+        </Link>
+      </div>
 
       {/* Panel Terminal Utama */}
       <div className="w-full max-w-md space-y-8 rounded-lg bg-[--bg] p-6 shadow-2xl ring-1 ring-white/10">
@@ -61,6 +72,7 @@ export default function Home() {
       </div>
       <ChallengeModal />
       <CheckpointModal />
+      <SettingsModal />
     </main>
   );
 }

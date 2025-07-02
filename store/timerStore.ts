@@ -24,6 +24,7 @@ interface TimerState {
     isChallengeModalOpen: boolean;
     isCheckpointModalOpen: boolean;
     checkpoints: Checkpoint[];
+    isSettingsModalOpen: boolean;
 }
 
 // 2. Definisikan tipe data untuk aksi kita (fungsi untuk mengubah state)
@@ -38,6 +39,9 @@ interface TimerActions {
     openCheckpointModal: () => void;
     closeCheckpointModal: () => void;
     addCheckpoint: (message: string) => void;
+    openSettingsModal: () => void;
+    closeSettingsModal: () => void;
+    updateSettings: (newSettings: TimerState['settings']) => void;
 }
 
 type StoredState = Pick<TimerState, 'settings' | 'sessionsCompleted' | 'checkpoints'>;
@@ -57,6 +61,7 @@ const initialState: TimerState = {
     isChallengeModalOpen: false,
     isCheckpointModalOpen: false,
     checkpoints: [],
+    isSettingsModalOpen: false,
 };
 
 // 3. Gabungkan semuanya dan buat store
@@ -65,6 +70,14 @@ export const useTimerStore = create(
     persist<TimerState & TimerActions, [], [], StoredState>(
         (set, get) => ({
             ...initialState,
+
+            openSettingsModal: () => set({ isSettingsModalOpen: true }),
+            closeSettingsModal: () => set({ isSettingsModalOpen: false }),
+            updateSettings: (newSettings) => {
+                set({ settings: newSettings });
+                // Setelah update, reset timer ke nilai baru jika pengguna sedang di mode itu
+                get().resetTimer();
+            },
 
             // Implementasi Aksi
             startTimer: () => set({ isRunning: true }),
@@ -157,6 +170,16 @@ export const useTimerStore = create(
                 sessionsCompleted: state.sessionsCompleted,
                 checkpoints: state.checkpoints,
             }),
+            onRehydrateStorage: () => (state, error) => {
+                if (state) {
+                    // Setelah data dimuat dari localStorage...
+                    // Atur ulang timeLeft sesuai dengan mode dan settings yang tersimpan.
+                    const currentMode = state.mode;
+                    const savedSettings = state.settings;
+                    state.timeLeft = savedSettings[currentMode] * 60;
+                    state.isRunning = false; // Selalu pastikan timer tidak berjalan saat re-load
+                }
+            },
         }
     )
 );
