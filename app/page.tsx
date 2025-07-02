@@ -8,6 +8,7 @@ import { TerminalOutput } from '../components/core/TerminalOutput'; // Impor kom
 import { formatTime } from '../lib/utils'; // Impor dari file utilitas
 import { ChallengeModal } from '@/components/core/ChallengeModal';
 import { CheckpointModal } from '@/components/core/CheckpointModal';
+import Link from 'next/link';
 
 export default function Home() {
   useTimer();
@@ -21,7 +22,11 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-12">
-      {/* Ini adalah "Panel Terminal" utama kita */}
+      <Link href="/stats" className="absolute top-4 right-4 rounded-md bg-white/10 px-4 py-2 text-sm font-bold text-[--text] transition-colors hover:bg-white/20">
+        Stats →
+      </Link>
+
+      {/* Panel Terminal Utama */}
       <div className="w-full max-w-md space-y-8 rounded-lg bg-[--bg] p-6 shadow-2xl ring-1 ring-white/10">
 
         {/* 1. Mode Selector di paling atas */}

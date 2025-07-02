@@ -1,5 +1,6 @@
 // store/timerStore.ts
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 // Tipe untuk mode timer
 type TimerMode = 'focus' | 'shortBreak' | 'longBreak';
@@ -39,6 +40,8 @@ interface TimerActions {
     addCheckpoint: (message: string) => void;
 }
 
+type StoredState = Pick<TimerState, 'settings' | 'sessionsCompleted' | 'checkpoints'>;
+
 // Nilai awal untuk state kita
 const initialState: TimerState = {
     mode: 'focus',
@@ -57,88 +60,103 @@ const initialState: TimerState = {
 };
 
 // 3. Gabungkan semuanya dan buat store
-export const useTimerStore = create<TimerState & TimerActions>((set, get) => ({
-    ...initialState,
+export const useTimerStore = create(
+    // Beritahu persist tipe lengkap DAN tipe yang disimpan
+    persist<TimerState & TimerActions, [], [], StoredState>(
+        (set, get) => ({
+            ...initialState,
 
-    // Implementasi Aksi
-    startTimer: () => set({ isRunning: true }),
+            // Implementasi Aksi
+            startTimer: () => set({ isRunning: true }),
 
-    pauseTimer: () => set({ isRunning: false }),
+            pauseTimer: () => set({ isRunning: false }),
 
-    decrementTime: () => {
-        // get() digunakan untuk mengakses state saat ini di dalam aksi
-        const currentTime = get().timeLeft;
-        if (currentTime > 0) {
-            set({ timeLeft: currentTime - 1 });
+            decrementTime: () => {
+                // get() digunakan untuk mengakses state saat ini di dalam aksi
+                const currentTime = get().timeLeft;
+                if (currentTime > 0) {
+                    set({ timeLeft: currentTime - 1 });
+                }
+            },
+
+            openCheckpointModal: () => set({ isCheckpointModalOpen: true }),
+
+            closeCheckpointModal: () => {
+                set({ isCheckpointModalOpen: false });
+                // Setelah checkpoint ditutup, selalu buka modal challenge untuk long break
+                get().openChallengeModal();
+            },
+
+            addCheckpoint: (message: string) => {
+                const newCheckpoint: Checkpoint = {
+                    message,
+                    timestamp: new Date().toISOString(),
+                };
+                set((state) => ({
+                    checkpoints: [...state.checkpoints, newCheckpoint],
+                }));
+            },
+
+            openChallengeModal: () => set({ isChallengeModalOpen: true }),
+            closeChallengeModal: () => set({ isChallengeModalOpen: false }),
+
+            switchMode: (newMode: TimerMode) => {
+                const { settings, mode: currentMode, sessionsCompleted, openCheckpointModal, openChallengeModal } = get();
+                let newSessionsCompleted = sessionsCompleted;
+
+                if (currentMode === 'focus') {
+                    newSessionsCompleted += 1;
+                }
+
+                if (currentMode === 'focus' && (newSessionsCompleted % 4 === 0)) {
+                    // Kasus 1: Sesi ke-4 selesai. Buka HANYA Checkpoint.
+                    openCheckpointModal();
+                } else if (newMode === 'shortBreak' || newMode === 'longBreak') {
+                    // Kasus 2: Break biasa. Langsung buka Challenge.
+                    openChallengeModal();
+                }
+
+                let newTimeLeft = 0;
+                switch (newMode) {
+                    case 'shortBreak':
+                        newTimeLeft = settings.shortBreak * 60;
+                        break;
+                    case 'longBreak':
+                        newTimeLeft = settings.longBreak * 60;
+                        break;
+                    case 'focus':
+                    default:
+                        newTimeLeft = settings.focus * 60;
+                        break;
+                }
+
+
+                // Pembaruan state terakhir yang bersih
+                set({
+                    mode: newMode,
+                    isRunning: false,
+                    timeLeft: newTimeLeft,
+                    sessionsCompleted: newSessionsCompleted,
+                });
+            },
+
+            resetTimer: () => {
+                const currentMode = get().mode;
+                set((state) => ({
+                    isRunning: false,
+                    timeLeft: state.settings[currentMode] * 60,
+                }));
+            },
+        }),
+        {
+            name: 'pomozone-storage',
+
+            // 3. Gunakan tipe baru kita di sini
+            partialize: (state): StoredState => ({
+                settings: state.settings,
+                sessionsCompleted: state.sessionsCompleted,
+                checkpoints: state.checkpoints,
+            }),
         }
-    },
-
-    openCheckpointModal: () => set({ isCheckpointModalOpen: true }),
-
-    closeCheckpointModal: () => {
-        set({ isCheckpointModalOpen: false });
-        // Setelah checkpoint ditutup, selalu buka modal challenge untuk long break
-        get().openChallengeModal();
-    },
-
-    addCheckpoint: (message: string) => {
-        const newCheckpoint: Checkpoint = {
-            message,
-            timestamp: new Date().toISOString(),
-        };
-        set((state) => ({
-            checkpoints: [...state.checkpoints, newCheckpoint],
-        }));
-    },
-
-    openChallengeModal: () => set({ isChallengeModalOpen: true }),
-    closeChallengeModal: () => set({ isChallengeModalOpen: false }),
-
-    switchMode: (newMode: TimerMode) => {
-        const { settings, mode: currentMode, sessionsCompleted, openCheckpointModal, openChallengeModal } = get();
-        let newSessionsCompleted = sessionsCompleted;
-
-        if (currentMode === 'focus') {
-            newSessionsCompleted += 1;
-        }
-
-        if (currentMode === 'focus' && (newSessionsCompleted % 4 === 0)) {
-            // Kasus 1: Sesi ke-4 selesai. Buka HANYA Checkpoint.
-            openCheckpointModal();
-        } else if (newMode === 'shortBreak' || newMode === 'longBreak') {
-            // Kasus 2: Break biasa. Langsung buka Challenge.
-            openChallengeModal();
-        }
-
-        let newTimeLeft = 0;
-        switch (newMode) {
-            case 'shortBreak':
-                newTimeLeft = settings.shortBreak * 60;
-                break;
-            case 'longBreak':
-                newTimeLeft = settings.longBreak * 60;
-                break;
-            case 'focus':
-            default:
-                newTimeLeft = settings.focus * 60;
-                break;
-        }
-
-
-        // Pembaruan state terakhir yang bersih
-        set({
-            mode: newMode,
-            isRunning: false,
-            timeLeft: newTimeLeft,
-            sessionsCompleted: newSessionsCompleted,
-        });
-    },
-
-    resetTimer: () => {
-        const currentMode = get().mode;
-        set((state) => ({
-            isRunning: false,
-            timeLeft: state.settings[currentMode] * 60,
-        }));
-    },
-}));
+    )
+);
