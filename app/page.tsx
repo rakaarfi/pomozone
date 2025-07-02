@@ -6,6 +6,7 @@ import { useTimer } from '../hooks/useTimer';
 import { ModeSelector } from '../components/core/ModeSelector';
 import { TerminalOutput } from '../components/core/TerminalOutput'; // Impor komponen baru
 import { formatTime } from '../lib/utils'; // Impor dari file utilitas
+import { ChallengeModal } from '@/components/core/ChallengeModal';
 
 export default function Home() {
   useTimer();
@@ -52,6 +53,7 @@ export default function Home() {
         </div>
 
       </div>
+      <ChallengeModal />
     </main>
   );
 }

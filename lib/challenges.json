@@ -1,0 +1,46 @@
+[
+    {
+        "question": "What is the output of: `console.log(1 << 2)` in JavaScript?",
+        "options": [
+            "2",
+            "4",
+            "8",
+            "1"
+        ],
+        "answer": "4",
+        "explanation": "The `<<` operator is a left bit shift. `1` in binary is `0001`. Shifting it left by 2 positions results in `0100`, which is `4` in decimal."
+    },
+    {
+        "question": "Which of these is NOT a valid way to declare a variable in JavaScript (ES6+)?",
+        "options": [
+            "let",
+            "const",
+            "var",
+            "def"
+        ],
+        "answer": "def",
+        "explanation": "`def` is used for function declaration in Python, not for variables in JavaScript. We use `let`, `const`, and `var`."
+    },
+    {
+        "question": "In CSS, what does `justify-content: space-between;` do in a flex container?",
+        "options": [
+            "Items are evenly distributed; first item is on the start line, last on the end line.",
+            "Items are centered along the line.",
+            "Items are packed to the start of the line.",
+            "Items have equal space around them."
+        ],
+        "answer": "Items are evenly distributed; first item is on the start line, last on the end line.",
+        "explanation": "`space-between` distributes items evenly, with the first item flush to the start and the last item flush to the end."
+    },
+    {
+        "question": "What does the `git checkout -b new-branch` command do?",
+        "options": [
+            "Deletes 'new-branch'",
+            "Switches to 'new-branch'",
+            "Creates 'new-branch' but does not switch to it",
+            "Creates 'new-branch' and switches to it"
+        ],
+        "answer": "Creates 'new-branch' and switches to it",
+        "explanation": "The `-b` flag is a convenient shortcut that combines `git branch new-branch` and `git checkout new-branch` into a single command."
+    }
+]

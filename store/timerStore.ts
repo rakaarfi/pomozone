@@ -15,6 +15,7 @@ interface TimerState {
         shortBreak: number; // Durasi dalam menit
         longBreak: number; // Durasi dalam menit
     };
+    isChallengeModalOpen: boolean;
 }
 
 // 2. Definisikan tipe data untuk aksi kita (fungsi untuk mengubah state)
@@ -24,6 +25,8 @@ interface TimerActions {
     decrementTime: () => void;
     switchMode: (newMode: TimerMode) => void;
     resetTimer: () => void;
+    openChallengeModal: () => void; // <-- Aksi baru
+    closeChallengeModal: () => void; // <-- Aksi baru
 }
 
 // Nilai awal untuk state kita
@@ -37,7 +40,8 @@ const initialState: TimerState = {
         longBreak: 15,
     },
     // Waktu awal diatur sesuai mode 'focus' dalam detik
-    timeLeft: 25 * 60,
+    timeLeft: 3,
+    isChallengeModalOpen: false, // <-- Nilai awal
 };
 
 // 3. Gabungkan semuanya dan buat store
@@ -80,13 +84,20 @@ export const useTimerStore = create<TimerState & TimerActions>((set, get) => ({
                 break;
         }
 
+        if (newMode === 'shortBreak' || newMode === 'longBreak') {
+            set({ isChallengeModalOpen: true });
+        }
+
         set({
             mode: newMode,
-            isRunning: false, // Selalu jeda saat berganti mode
+            isRunning: false,
             timeLeft: newTimeLeft,
             sessionsCompleted: newSessionsCompleted,
         });
     },
+
+    openChallengeModal: () => set({ isChallengeModalOpen: true }),
+    closeChallengeModal: () => set({ isChallengeModalOpen: false }),
 
     resetTimer: () => {
         // Untuk mereset, kita hanya perlu switch ke mode yang sedang aktif
