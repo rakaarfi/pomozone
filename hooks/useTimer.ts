@@ -3,6 +3,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useTimerStore } from '../store/timerStore';
+import audioManager from '../lib/audioManager';
 
 export const useTimer = () => {
     // Ambil setiap nilai dan fungsi secara terpisah.
@@ -13,6 +14,7 @@ export const useTimer = () => {
     const sessionsCompleted = useTimerStore((state) => state.sessionsCompleted);
     const decrementTime = useTimerStore((state) => state.decrementTime);
     const switchMode = useTimerStore((state) => state.switchMode);
+    const soundSettings = useTimerStore((state) => state.soundSettings);
 
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -45,4 +47,20 @@ export const useTimer = () => {
             }
         }
     }, [timeLeft, mode, sessionsCompleted, switchMode]);
+
+    useEffect(() => {
+        // Cek apakah suara diaktifkan secara global DAN timer sedang berjalan di mode fokus
+        const shouldPlay = soundSettings.enabled && isRunning && mode === 'focus';
+
+        if (shouldPlay) {
+            audioManager.playAmbient(soundSettings.ambientSound);
+        } else {
+            audioManager.stopAmbient();
+        }
+
+        // Fungsi cleanup untuk memastikan suara berhenti saat komponen unmount
+        return () => {
+            audioManager.stopAmbient();
+        };
+    }, [isRunning, mode, soundSettings]); // Bergantung pada state ini
 };

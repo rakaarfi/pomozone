@@ -3,8 +3,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Light mode colors */
+  --bg: #ffffff;
+  --text: #24292f;
+  --accent: #0969da;
+  --comment: #6e7781;
+  --success: #1a7f37;
+  --error: #cf222e;
+
+  --background: var(--bg);
+  --foreground: var(--text);
   --font-mono: 'Fira Code', monospace;
 }
 
@@ -16,7 +24,11 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    /* Dark mode colors */
     --bg: #0d1117;
+    /* Latar belakang utama halaman */
+    --bg-subtle: #21262d;
+    /* BARU: Latar belakang untuk komponen seperti toggle 'off' */
     --text: #c9d1d9;
     --accent: #58a6ff;
     --comment: #8b949e;

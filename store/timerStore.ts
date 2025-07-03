@@ -1,6 +1,7 @@
 // store/timerStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { type AmbientSound } from '../lib/audioManager';
 
 // Tipe untuk mode timer
 type TimerMode = 'focus' | 'shortBreak' | 'longBreak';
@@ -8,6 +9,12 @@ type TimerMode = 'focus' | 'shortBreak' | 'longBreak';
 export interface Checkpoint {
     message: string;
     timestamp: string; // Kita akan simpan sebagai ISO string
+}
+
+// Tipe untuk pengaturan suara
+interface SoundSettings {
+    ambientSound: AmbientSound;
+    enabled: boolean;
 }
 
 // 1. Definisikan tipe data untuk state kita (apa saja yang perlu disimpan)
@@ -25,6 +32,7 @@ interface TimerState {
     isCheckpointModalOpen: boolean;
     checkpoints: Checkpoint[];
     isSettingsModalOpen: boolean;
+    soundSettings: SoundSettings;
 }
 
 // 2. Definisikan tipe data untuk aksi kita (fungsi untuk mengubah state)
@@ -42,9 +50,10 @@ interface TimerActions {
     openSettingsModal: () => void;
     closeSettingsModal: () => void;
     updateSettings: (newSettings: TimerState['settings']) => void;
+    updateSoundSettings: (newSettings: Partial<SoundSettings>) => void;
 }
 
-type StoredState = Pick<TimerState, 'settings' | 'sessionsCompleted' | 'checkpoints'>;
+type StoredState = Pick<TimerState, 'settings' | 'soundSettings' | 'sessionsCompleted' | 'checkpoints'>;
 
 // Nilai awal untuk state kita
 const initialState: TimerState = {
@@ -62,6 +71,10 @@ const initialState: TimerState = {
     isCheckpointModalOpen: false,
     checkpoints: [],
     isSettingsModalOpen: false,
+    soundSettings: { // <-- Nilai awal
+        ambientSound: 'keyboard',
+        enabled: true,
+    },
 };
 
 // 3. Gabungkan semuanya dan buat store
@@ -160,6 +173,11 @@ export const useTimerStore = create(
                     timeLeft: state.settings[currentMode] * 60,
                 }));
             },
+            updateSoundSettings: (newSettings) => {
+                set((state) => ({
+                    soundSettings: { ...state.soundSettings, ...newSettings },
+                }));
+            },
         }),
         {
             name: 'pomozone-storage',
@@ -167,6 +185,7 @@ export const useTimerStore = create(
             // 3. Gunakan tipe baru kita di sini
             partialize: (state): StoredState => ({
                 settings: state.settings,
+                soundSettings: state.soundSettings,
                 sessionsCompleted: state.sessionsCompleted,
                 checkpoints: state.checkpoints,
             }),
