@@ -51,6 +51,7 @@ interface TimerActions {
     closeSettingsModal: () => void;
     updateSettings: (newSettings: TimerState['settings']) => void;
     updateSoundSettings: (newSettings: Partial<SoundSettings>) => void;
+    incrementSessions: () => void;
 }
 
 type StoredState = Pick<TimerState, 'settings' | 'soundSettings' | 'sessionsCompleted' | 'checkpoints'>;
@@ -88,8 +89,6 @@ export const useTimerStore = create(
             closeSettingsModal: () => set({ isSettingsModalOpen: false }),
             updateSettings: (newSettings) => {
                 set({ settings: newSettings });
-                // Setelah update, reset timer ke nilai baru jika pengguna sedang di mode itu
-                get().resetTimer();
             },
 
             // Implementasi Aksi
@@ -98,7 +97,6 @@ export const useTimerStore = create(
             pauseTimer: () => set({ isRunning: false }),
 
             decrementTime: () => {
-                // get() digunakan untuk mengakses state saat ini di dalam aksi
                 const currentTime = get().timeLeft;
                 if (currentTime > 0) {
                     set({ timeLeft: currentTime - 1 });
@@ -126,21 +124,15 @@ export const useTimerStore = create(
             openChallengeModal: () => set({ isChallengeModalOpen: true }),
             closeChallengeModal: () => set({ isChallengeModalOpen: false }),
 
+            incrementSessions: () => {
+                set((state) => ({ sessionsCompleted: state.sessionsCompleted + 1 }));
+            },
+
             switchMode: (newMode: TimerMode) => {
-                const { settings, mode: currentMode, sessionsCompleted, openCheckpointModal, openChallengeModal } = get();
-                let newSessionsCompleted = sessionsCompleted;
+                const { settings } = get();
 
-                if (currentMode === 'focus') {
-                    newSessionsCompleted += 1;
-                }
-
-                if (currentMode === 'focus' && (newSessionsCompleted % 4 === 0)) {
-                    // Kasus 1: Sesi ke-4 selesai. Buka HANYA Checkpoint.
-                    openCheckpointModal();
-                } else if (newMode === 'shortBreak' || newMode === 'longBreak') {
-                    // Kasus 2: Break biasa. Langsung buka Challenge.
-                    openChallengeModal();
-                }
+                // Hapus SEMUA logika yang berhubungan dengan sessionsCompleted dari sini.
+                // switchMode sekarang hanya bertanggung jawab untuk mengubah mode dan mengatur ulang waktu.
 
                 let newTimeLeft = 0;
                 switch (newMode) {
@@ -156,13 +148,11 @@ export const useTimerStore = create(
                         break;
                 }
 
-
-                // Pembaruan state terakhir yang bersih
                 set({
                     mode: newMode,
                     isRunning: false,
                     timeLeft: newTimeLeft,
-                    sessionsCompleted: newSessionsCompleted,
+                    // Hapus `sessionsCompleted` dari sini
                 });
             },
 

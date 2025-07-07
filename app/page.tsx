@@ -10,9 +10,11 @@ import { ChallengeModal } from '@/components/core/ChallengeModal';
 import { CheckpointModal } from '@/components/core/CheckpointModal';
 import Link from 'next/link';
 import { SettingsModal } from '../components/core/SettingsModal';
+import { useAudioController } from '../hooks/useAudioController';
 
 export default function Home() {
   useTimer();
+  useAudioController();
 
   // Ambil state dan aksi secara individual (aturan emas!)
   const isRunning = useTimerStore((state) => state.isRunning);
@@ -21,6 +23,18 @@ export default function Home() {
   const pauseTimer = useTimerStore((state) => state.pauseTimer);
   const resetTimer = useTimerStore((state) => state.resetTimer);
   const openSettingsModal = useTimerStore((state) => state.openSettingsModal);
+
+  const handleResetClick = () => {
+    // Jika timer berjalan, minta konfirmasi
+    if (isRunning) {
+      if (window.confirm('The timer is running. Are you sure you want to reset?')) {
+        resetTimer();
+      }
+    } else {
+      // Jika tidak berjalan, reset saja langsung
+      resetTimer();
+    }
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-12">
@@ -56,7 +70,7 @@ export default function Home() {
         {/* 4. Area Kontrol di paling bawah */}
         <div className="flex items-center justify-center gap-4">
           <button
-            onClick={resetTimer}
+            onClick={handleResetClick}
             className="px-4 py-3 text-sm font-bold uppercase text-[--comment] transition-colors hover:text-[--text]"
           >
             Reset

@@ -1,55 +1,55 @@
 // lib/audioManager.ts
 import { Howl } from 'howler';
 
-// Definisikan suara yang tersedia
-export const ambientSounds = {
-    keyboard: '/sounds/mecha-keyboard-creamy.mp3',
-    rain: '/sounds/rain_medium_thunders.mp3',
-    library: '/sounds/library-ambiance.mp3',
-    // 'none' adalah opsi untuk tidak memutar apa pun
-    none: 'none',
-};
+export const ambientSoundsList = ['keyboard', 'rain', 'library', 'none'] as const;
+export type AmbientSound = typeof ambientSoundsList[number];
 
-// Tipe untuk nama suara yang valid
-export type AmbientSound = keyof typeof ambientSounds;
-
-let currentAmbient: Howl | null = null;
+// PENTING: Hanya satu variabel untuk melacak suara yang sedang aktif.
+let currentSound: Howl | null = null;
 
 const audioManager = {
-    playAmbient: (soundName: AmbientSound) => {
-        // Hentikan suara yang sedang berjalan jika ada
-        audioManager.stopAmbient();
+    // Hanya DUA fungsi yang kita butuhkan: play dan stop.
 
-        if (soundName === 'none' || !ambientSounds[soundName]) {
+    play: (soundName: AmbientSound, volume: number = 0.3) => {
+        // 1. Hentikan dan hancurkan suara lama APAPUN yang sedang berjalan.
+        // Ini adalah langkah paling penting yang kita lewatkan.
+        if (currentSound) {
+            currentSound.stop();
+            currentSound.unload(); // Hapus dari memori untuk mencegah konflik
+            currentSound = null;
+        }
+
+        // 2. Jika suara yang diminta adalah 'none', selesai.
+        if (soundName === 'none') {
             return;
         }
 
-        // Buat dan mainkan suara baru
-        currentAmbient = new Howl({
-            src: [ambientSounds[soundName]],
+        // 3. Buat objek Howl BARU dan mainkan.
+        // Membuat ulang objek setiap saat itu tidak apa-apa dan lebih aman daripada mencoba mengelola bank.
+        currentSound = new Howl({
+            src: [`/sounds/${soundName}.mp3`], // Asumsi nama file sama dengan nama suara
             loop: true,
-            volume: 0, // Mulai dengan volume 0
-            html5: true, // Direkomendasikan untuk file panjang
+            html5: true,
+            volume: 0, // Mulai dari 0 untuk fade in
         });
 
-        currentAmbient.play();
-        // Fade in ke volume target
-        currentAmbient.fade(0, 0.3, 1000); // fade from volume 0 to 0.3 over 1 second
+        currentSound.play();
+        currentSound.fade(0, volume, 1000);
     },
 
-    stopAmbient: () => {
-        if (currentAmbient) {
-            // Fade out lalu hentikan
-            currentAmbient.fade(currentAmbient.volume(), 0, 500);
-            currentAmbient.once('fade', () => {
-                currentAmbient?.stop();
-                currentAmbient = null;
+    stop: () => {
+        if (currentSound) {
+            // Fade out lalu hancurkan.
+            currentSound.fade(currentSound.volume(), 0, 500);
+            currentSound.once('fade', () => {
+                if (currentSound) {
+                    currentSound.stop();
+                    currentSound.unload();
+                    currentSound = null;
+                }
             });
         }
     },
-
-    // Nanti kita bisa tambahkan efek suara lain di sini
-    // playEffect: (effectName: string) => { ... }
 };
 
 export default audioManager;

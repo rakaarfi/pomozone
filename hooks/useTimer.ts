@@ -6,19 +6,21 @@ import { useTimerStore } from '../store/timerStore';
 import audioManager from '../lib/audioManager';
 
 export const useTimer = () => {
-    // Ambil setiap nilai dan fungsi secara terpisah.
-    // Ini adalah cara yang benar untuk menghindari re-render yang tidak perlu.
     const isRunning = useTimerStore((state) => state.isRunning);
     const timeLeft = useTimerStore((state) => state.timeLeft);
     const mode = useTimerStore((state) => state.mode);
     const sessionsCompleted = useTimerStore((state) => state.sessionsCompleted);
     const decrementTime = useTimerStore((state) => state.decrementTime);
     const switchMode = useTimerStore((state) => state.switchMode);
-    const soundSettings = useTimerStore((state) => state.soundSettings);
+    const incrementSessions = useTimerStore((state) => state.incrementSessions);
+    const openCheckpointModal = useTimerStore((state) => state.openCheckpointModal);
+    const openChallengeModal = useTimerStore((state) => state.openChallengeModal);
+    const soundEnabled = useTimerStore((state) => state.soundSettings.enabled);
+    const ambientSound = useTimerStore((state) => state.soundSettings.ambientSound);
 
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    // useEffect untuk interval timer (tidak ada perubahan di sini)
+    // useEffect untuk interval timer
     useEffect(() => {
         if (isRunning) {
             intervalRef.current = setInterval(() => {
@@ -36,31 +38,47 @@ export const useTimer = () => {
         };
     }, [isRunning, decrementTime]);
 
-    // useEffect untuk pergantian mode otomatis (tidak ada perubahan di sini)
+    // useEffect untuk pergantian mode otomatis
     useEffect(() => {
         if (timeLeft === 0) {
-            if (mode === 'focus') {
-                const nextMode = (sessionsCompleted + 1) % 4 === 0 ? 'longBreak' : 'shortBreak';
-                switchMode(nextMode);
+            // Ambil state terbaru langsung dari store untuk menghindari stale state
+            const currentState = useTimerStore.getState(); 
+            
+            if (currentState.mode === 'focus') {
+                // 1. Tambah sesi
+                currentState.incrementSessions();
+                
+                // 2. Ambil nilai TERBARU setelah increment
+                const nextSessionsCount = useTimerStore.getState().sessionsCompleted;
+
+                // 3. Tentukan mode/aksi berikutnya
+                if (nextSessionsCount > 0 && nextSessionsCount % 4 === 0) {
+                    currentState.openCheckpointModal();
+                    currentState.switchMode('longBreak');
+                } else {
+                    currentState.openChallengeModal();
+                    currentState.switchMode('shortBreak');
+                }
             } else {
-                switchMode('focus');
+                currentState.switchMode('focus');
             }
         }
-    }, [timeLeft, mode, sessionsCompleted, switchMode]);
+        // Kita tidak perlu memasukkan semua fungsi ke dependency array
+        // karena referensinya stabil.
+    }, [timeLeft]);
 
-    useEffect(() => {
-        // Cek apakah suara diaktifkan secara global DAN timer sedang berjalan di mode fokus
-        const shouldPlay = soundSettings.enabled && isRunning && mode === 'focus';
+    // // useEffect untuk audio
+    // useEffect(() => {
+    //     const shouldPlay = soundEnabled && isRunning && mode === 'focus';
 
-        if (shouldPlay) {
-            audioManager.playAmbient(soundSettings.ambientSound);
-        } else {
-            audioManager.stopAmbient();
-        }
+    //     if (shouldPlay) {
+    //         audioManager.playAmbient(ambientSound);
+    //     } else {
+    //         audioManager.stopAmbient();
+    //     }
 
-        // Fungsi cleanup untuk memastikan suara berhenti saat komponen unmount
-        return () => {
-            audioManager.stopAmbient();
-        };
-    }, [isRunning, mode, soundSettings]); // Bergantung pada state ini
+    //     return () => {
+    //         audioManager.stopAmbient();
+    //     };
+    // }, [isRunning, mode, soundEnabled, ambientSound]);
 };
