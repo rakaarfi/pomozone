@@ -36,8 +36,17 @@ export const SettingsModal = () => {
     const resetTimerForUpdate = useTimerStore((state) => state.resetTimer);
 
     // --- State Lokal untuk Form & UI Feedback ---
-    const [formState, setFormState] = useState<SettingsFormState>({ timer: currentSettings, sound: currentSoundSettings });
-    const [isDirty, setIsDirty] = useState(false);
+    const [formState, setFormState] = useState<SettingsFormState>({
+        timer: currentSettings,
+        sound: currentSoundSettings
+    });
+
+    const [dirtyState, setDirtyState] = useState({
+        timer: false,
+        sound: false,
+    });
+    const isFormDirty = dirtyState.timer || dirtyState.sound;
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSavedConfirmation, setShowSavedConfirmation] = useState(false);
 
@@ -45,7 +54,7 @@ export const SettingsModal = () => {
     useEffect(() => {
         if (isOpen) {
             setFormState({ timer: currentSettings, sound: currentSoundSettings });
-            setIsDirty(false);
+            setDirtyState({ timer: false, sound: false });
             setShowSavedConfirmation(false);
         }
     }, [isOpen, currentSettings, currentSoundSettings]);
@@ -61,26 +70,32 @@ export const SettingsModal = () => {
     // --- Handler untuk Perubahan Input ---
     const handleTimerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormState(prev => ({ ...prev, timer: { ...prev.timer, [name]: parseInt(value, 10) || 0 } }));
-        setIsDirty(true);
+        setFormState(prev => ({
+            ...prev,
+            timer: {
+                ...prev.timer,
+                [name]: parseInt(value, 10) || 0
+            }
+        }));
+        setDirtyState(prev => ({ ...prev, timer: true }));
     };
 
     const handleSoundChange = (newSoundSettings: Partial<SettingsFormState['sound']>) => {
         setFormState(prev => ({ ...prev, sound: { ...prev.sound, ...newSoundSettings } }));
-        setIsDirty(true);
+        setDirtyState(prev => ({ ...prev, sound: true }));
     };
 
     // --- Handler untuk Tombol SAVE ---
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!isDirty || isSubmitting) return;
+        if (!isFormDirty || isSubmitting) return;
 
         setIsSubmitting(true);
 
         // Langsung update state global
         updateSettings(formState.timer);
         updateSoundSettings(formState.sound);
-        
+
         // Cek apakah timer sedang berjalan
         const isCurrentlyRunning = useTimerStore.getState().isRunning;
 
@@ -92,7 +107,7 @@ export const SettingsModal = () => {
         // HAPUS SEMUA LOGIKA pauseTimer/startTimer/setTimeout DARI SINI
 
         setIsSubmitting(false);
-        setIsDirty(false);
+        setDirtyState({ timer: false, sound: false });
         setShowSavedConfirmation(true);
     };
 
@@ -281,7 +296,7 @@ export const SettingsModal = () => {
                                     <span>Settings saved successfully.</span>
                                 </motion.p>
                             )}
-                            {isDirty && isTimerRunning && (
+                            {isTimerRunning && dirtyState.timer && !showSavedConfirmation && (
                                 <motion.p
                                     initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                                     className="text-xs text-[--comment]">
@@ -293,26 +308,43 @@ export const SettingsModal = () => {
 
                     <button
                         type="submit"
-                        disabled={!isDirty || isSubmitting}
-                        className={`flex items-center justify-center gap-2 w-32 rounded-md px-4 py-2 text-sm font-bold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
-                            ${isSubmitting
-                                ? 'bg-white/10 text-[--comment]'
+                        // Gunakan helper boolean untuk disabled
+                        disabled={!isFormDirty || isSubmitting}
+                        className={`flex items-center justify-center gap-2 w-36 rounded-md px-4 py-2 text-sm font-bold transition-all duration-200 disabled:cursor-not-allowed
+        ${
+                            // Urutan prioritas sangat penting di sini
+                            isSubmitting
+                                ? 'bg-white/10 text-[--comment] opacity-100' // State 1: Menyimpan...
                                 : showSavedConfirmation
-                                    ? 'bg-[--success] text-white'
-                                    : isDirty
-                                        ? 'bg-[--accent] text-[--bg] hover:opacity-90'
-                                        : 'bg-white/10 text-[--comment]'
+                                    ? 'bg-[--success] text-white' // State 2: Berhasil Disimpan
+                                    : isFormDirty
+                                        ? 'bg-[--accent] text-[--bg] hover:opacity-90' // State 3: Siap Disimpan
+                                        : 'bg-white/10 text-[--comment] opacity-50' // State 4: Default (Tidak ada perubahan)
                             }
-                        `}
+    `}
                     >
                         {isSubmitting ? (
                             <>
-                                <motion.div /* ... props spinner ... */ />
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                    className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+                                />
                                 <span>Saving...</span>
                             </>
                         ) : showSavedConfirmation ? (
                             <>
-                                <motion.svg /* ... props ikon centang ... */ />
+                                <motion.svg
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                    className="w-5 h-5"
+                                >
+                                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.052-.143z" clipRule="evenodd" />
+                                </motion.svg>
                                 <span>Saved!</span>
                             </>
                         ) : (
