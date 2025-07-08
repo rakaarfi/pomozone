@@ -1,7 +1,7 @@
 // components/core/ChallengeModal.tsx
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal } from '../ui/Modal';
 import { useTimerStore } from '../../store/timerStore';
 import challenges from '../../lib/challenges.json';

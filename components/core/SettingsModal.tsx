@@ -22,9 +22,6 @@ interface SettingsFormState {
 }
 
 export const SettingsModal = () => {
-    // --- Ambil aksi start/pause dari store ---
-    const startTimer = useTimerStore((state) => state.startTimer);
-    const pauseTimer = useTimerStore((state) => state.pauseTimer);
     // --- Ambil state dan aksi dari Zustand ---
     const isOpen = useTimerStore((state) => state.isSettingsModalOpen);
     const closeModal = useTimerStore((state) => state.closeSettingsModal);

@@ -28,7 +28,7 @@ export const CheckpointModal = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                     <label htmlFor="commit-message" className="block text-sm font-medium text-[--comment]">
-                        git commit -m "<span className="text-[--text]">{commitMessage || 'Your summary...'}</span>"
+                        git commit -m &quot;<span className="text-[--text]">{commitMessage || 'Your summary...'}</span>&quot;
                     </label>
                     <div className="mt-1">
                         <input
