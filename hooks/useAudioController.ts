@@ -15,15 +15,12 @@ export const useAudioController = () => {
         const shouldPlay = soundEnabled && isRunning && mode === 'focus';
 
         if (shouldPlay) {
-            // Panggil fungsi play yang baru dan sederhana
             audioManager.play(ambientSound);
         } else {
-            // Panggil fungsi stop yang baru dan sederhana
             audioManager.stop();
         }
     }, [isRunning, mode, soundEnabled, ambientSound]);
 
-    // Efek cleanup saat komponen unmount (misal, pindah halaman)
     useEffect(() => {
         return () => {
             audioManager.stop();

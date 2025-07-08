@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { PwaRegistry } from "@/components/core/PwaRegistry";
 
-// Ganti "Raka Arfi" dan URL/handle dengan milik Anda
 const APP_NAME = "PomoZone";
 const APP_DESCRIPTION = "A terminal-inspired Pomodoro app to help developers code, focus, and commit to deep work sessions.";
 const APP_URL = "https://pomozone.vercel.app";

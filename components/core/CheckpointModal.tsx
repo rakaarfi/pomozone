@@ -6,19 +6,17 @@ import { Modal } from '../ui/Modal';
 import { useTimerStore } from '../../store/timerStore';
 
 export const CheckpointModal = () => {
-    // Ambil state dan aksi dari store secara individual
     const isOpen = useTimerStore((state) => state.isCheckpointModalOpen);
     const closeModal = useTimerStore((state) => state.closeCheckpointModal);
     const addCheckpoint = useTimerStore((state) => state.addCheckpoint);
 
-    // State lokal untuk input form
     const [commitMessage, setCommitMessage] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (commitMessage.trim()) {
             addCheckpoint(commitMessage.trim());
-            setCommitMessage(''); // Kosongkan input setelah submit
+            setCommitMessage('');
             closeModal();
         }
     };

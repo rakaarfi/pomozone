@@ -16,7 +16,6 @@ export default function Home() {
   useTimer();
   useAudioController();
 
-  // Ambil state dan aksi secara individual (aturan emas!)
   const isRunning = useTimerStore((state) => state.isRunning);
   const timeLeft = useTimerStore((state) => state.timeLeft);
   const startTimer = useTimerStore((state) => state.startTimer);

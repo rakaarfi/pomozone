@@ -5,11 +5,10 @@ import { useEffect } from 'react';
 
 export const PwaRegistry = () => {
     useEffect(() => {
-        // Pastikan kita berada di browser dan service worker didukung
         if (
             typeof window !== 'undefined' &&
             'serviceWorker' in navigator &&
-            process.env.NODE_ENV === 'production' // Hanya jalankan di mode produksi
+            process.env.NODE_ENV === 'production'
         ) {
             console.log('Attempting to register service worker...');
 
@@ -28,8 +27,7 @@ export const PwaRegistry = () => {
                 console.log('Service Worker not supported by this browser.');
             }
         }
-    }, []); // Jalankan hanya sekali saat komponen dimuat
+    }, []);
 
-    // Komponen ini tidak me-render apa pun ke UI
     return null;
 };

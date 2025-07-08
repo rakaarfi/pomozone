@@ -41,17 +41,13 @@ export const useTimer = () => {
     // useEffect untuk pergantian mode otomatis
     useEffect(() => {
         if (timeLeft === 0) {
-            // Ambil state terbaru langsung dari store untuk menghindari stale state
             const currentState = useTimerStore.getState(); 
             
             if (currentState.mode === 'focus') {
-                // 1. Tambah sesi
                 currentState.incrementSessions();
                 
-                // 2. Ambil nilai TERBARU setelah increment
                 const nextSessionsCount = useTimerStore.getState().sessionsCompleted;
 
-                // 3. Tentukan mode/aksi berikutnya
                 if (nextSessionsCount > 0 && nextSessionsCount % 4 === 0) {
                     currentState.openCheckpointModal();
                     currentState.switchMode('longBreak');
@@ -63,22 +59,5 @@ export const useTimer = () => {
                 currentState.switchMode('focus');
             }
         }
-        // Kita tidak perlu memasukkan semua fungsi ke dependency array
-        // karena referensinya stabil.
     }, [timeLeft]);
-
-    // // useEffect untuk audio
-    // useEffect(() => {
-    //     const shouldPlay = soundEnabled && isRunning && mode === 'focus';
-
-    //     if (shouldPlay) {
-    //         audioManager.playAmbient(ambientSound);
-    //     } else {
-    //         audioManager.stopAmbient();
-    //     }
-
-    //     return () => {
-    //         audioManager.stopAmbient();
-    //     };
-    // }, [isRunning, mode, soundEnabled, ambientSound]);
 };

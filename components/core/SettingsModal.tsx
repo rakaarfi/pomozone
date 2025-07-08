@@ -8,7 +8,6 @@ import { ambientSoundsList, type AmbientSound } from '../../lib/audioManager';
 import { Tab, Listbox } from '@headlessui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Tipe Form tetap sama
 interface SettingsFormState {
     timer: {
         focus: number;
@@ -22,7 +21,6 @@ interface SettingsFormState {
 }
 
 export const SettingsModal = () => {
-    // --- Ambil state dan aksi dari Zustand ---
     const isOpen = useTimerStore((state) => state.isSettingsModalOpen);
     const closeModal = useTimerStore((state) => state.closeSettingsModal);
     const updateSettings = useTimerStore((state) => state.updateSettings);
@@ -47,7 +45,6 @@ export const SettingsModal = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSavedConfirmation, setShowSavedConfirmation] = useState(false);
 
-    // Sinkronkan form saat modal terbuka
     useEffect(() => {
         if (isOpen) {
             setFormState({ timer: currentSettings, sound: currentSoundSettings });
@@ -56,7 +53,6 @@ export const SettingsModal = () => {
         }
     }, [isOpen, currentSettings, currentSoundSettings]);
 
-    // Sembunyikan notifikasi "Saved" setelah beberapa detik
     useEffect(() => {
         if (showSavedConfirmation) {
             const timerId = setTimeout(() => setShowSavedConfirmation(false), 2000);
@@ -89,19 +85,14 @@ export const SettingsModal = () => {
 
         setIsSubmitting(true);
 
-        // Langsung update state global
         updateSettings(formState.timer);
         updateSoundSettings(formState.sound);
 
-        // Cek apakah timer sedang berjalan
         const isCurrentlyRunning = useTimerStore.getState().isRunning;
 
-        // Jika timer TIDAK berjalan, update tampilan
         if (!isCurrentlyRunning) {
             resetTimerForUpdate();
         }
-
-        // HAPUS SEMUA LOGIKA pauseTimer/startTimer/setTimeout DARI SINI
 
         setIsSubmitting(false);
         setDirtyState({ timer: false, sound: false });
@@ -311,12 +302,12 @@ export const SettingsModal = () => {
         ${
                             // Urutan prioritas sangat penting di sini
                             isSubmitting
-                                ? 'bg-white/10 text-[--comment] opacity-100' // State 1: Menyimpan...
+                                ? 'bg-white/10 text-[--comment] opacity-100'
                                 : showSavedConfirmation
-                                    ? 'bg-[--success] text-white' // State 2: Berhasil Disimpan
+                                    ? 'bg-[--success] text-white'
                                     : isFormDirty
-                                        ? 'bg-[--accent] text-[--bg] hover:opacity-90' // State 3: Siap Disimpan
-                                        : 'bg-white/10 text-[--comment] opacity-50' // State 4: Default (Tidak ada perubahan)
+                                        ? 'bg-[--accent] text-[--bg] hover:opacity-90'
+                                        : 'bg-white/10 text-[--comment] opacity-50'
                             }
     `}
                     >

@@ -3,12 +3,11 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { type AmbientSound } from '../lib/audioManager';
 
-// Tipe untuk mode timer
 type TimerMode = 'focus' | 'shortBreak' | 'longBreak';
 
 export interface Checkpoint {
     message: string;
-    timestamp: string; // Kita akan simpan sebagai ISO string
+    timestamp: string;
 }
 
 // Tipe untuk pengaturan suara
@@ -17,16 +16,15 @@ interface SoundSettings {
     enabled: boolean;
 }
 
-// 1. Definisikan tipe data untuk state kita (apa saja yang perlu disimpan)
 interface TimerState {
     mode: TimerMode;
-    timeLeft: number; // Waktu dalam detik
+    timeLeft: number; // detik
     isRunning: boolean;
     sessionsCompleted: number;
     settings: {
-        focus: number; // Durasi dalam menit
-        shortBreak: number; // Durasi dalam menit
-        longBreak: number; // Durasi dalam menit
+        focus: number; // menit
+        shortBreak: number; // menit
+        longBreak: number; // menit
     };
     isChallengeModalOpen: boolean;
     isCheckpointModalOpen: boolean;
@@ -35,7 +33,6 @@ interface TimerState {
     soundSettings: SoundSettings;
 }
 
-// 2. Definisikan tipe data untuk aksi kita (fungsi untuk mengubah state)
 interface TimerActions {
     startTimer: () => void;
     pauseTimer: () => void;
@@ -56,7 +53,6 @@ interface TimerActions {
 
 type StoredState = Pick<TimerState, 'settings' | 'soundSettings' | 'sessionsCompleted' | 'checkpoints'>;
 
-// Nilai awal untuk state kita
 const initialState: TimerState = {
     mode: 'focus',
     isRunning: false,
@@ -66,21 +62,18 @@ const initialState: TimerState = {
         shortBreak: 5,
         longBreak: 15,
     },
-    // Waktu awal diatur sesuai mode 'focus' dalam detik
     timeLeft: 25 * 60,
     isChallengeModalOpen: false,
     isCheckpointModalOpen: false,
     checkpoints: [],
     isSettingsModalOpen: false,
-    soundSettings: { // <-- Nilai awal
+    soundSettings: {
         ambientSound: 'keyboard',
         enabled: true,
     },
 };
 
-// 3. Gabungkan semuanya dan buat store
 export const useTimerStore = create(
-    // Beritahu persist tipe lengkap DAN tipe yang disimpan
     persist<TimerState & TimerActions, [], [], StoredState>(
         (set, get) => ({
             ...initialState,
@@ -91,7 +84,6 @@ export const useTimerStore = create(
                 set({ settings: newSettings });
             },
 
-            // Implementasi Aksi
             startTimer: () => set({ isRunning: true }),
 
             pauseTimer: () => set({ isRunning: false }),
@@ -107,7 +99,6 @@ export const useTimerStore = create(
 
             closeCheckpointModal: () => {
                 set({ isCheckpointModalOpen: false });
-                // Setelah checkpoint ditutup, selalu buka modal challenge untuk long break
                 get().openChallengeModal();
             },
 
@@ -131,9 +122,6 @@ export const useTimerStore = create(
             switchMode: (newMode: TimerMode) => {
                 const { settings } = get();
 
-                // Hapus SEMUA logika yang berhubungan dengan sessionsCompleted dari sini.
-                // switchMode sekarang hanya bertanggung jawab untuk mengubah mode dan mengatur ulang waktu.
-
                 let newTimeLeft = 0;
                 switch (newMode) {
                     case 'shortBreak':
@@ -152,7 +140,6 @@ export const useTimerStore = create(
                     mode: newMode,
                     isRunning: false,
                     timeLeft: newTimeLeft,
-                    // Hapus `sessionsCompleted` dari sini
                 });
             },
 
@@ -172,7 +159,6 @@ export const useTimerStore = create(
         {
             name: 'pomozone-storage',
 
-            // 3. Gunakan tipe baru kita di sini
             partialize: (state): StoredState => ({
                 settings: state.settings,
                 soundSettings: state.soundSettings,
@@ -181,12 +167,10 @@ export const useTimerStore = create(
             }),
             onRehydrateStorage: () => (state, error) => {
                 if (state) {
-                    // Setelah data dimuat dari localStorage...
-                    // Atur ulang timeLeft sesuai dengan mode dan settings yang tersimpan.
                     const currentMode = state.mode;
                     const savedSettings = state.settings;
                     state.timeLeft = savedSettings[currentMode] * 60;
-                    state.isRunning = false; // Selalu pastikan timer tidak berjalan saat re-load
+                    state.isRunning = false;
                 }
             },
         }
