@@ -7,7 +7,7 @@ export default function OfflinePage() {
                     You are offline
                 </h1>
                 <p className="mt-2 text-[--comment]">
-                    Please check your internet connection to use Pomozone.
+                    Please check your internet connection to use PomoZone.
                 </p>
             </div>
         </main>

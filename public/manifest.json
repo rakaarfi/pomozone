@@ -1,6 +1,6 @@
 {
-    "name": "Pomozone - Focus Terminal",
-    "short_name": "Pomozone",
+    "name": "PomoZone - Focus Terminal",
+    "short_name": "PomoZone",
     "description": "A terminal-inspired Pomodoro app for developers to code, focus, and commit.",
     "start_url": "/",
     "display": "standalone",
@@ -24,14 +24,14 @@
             "sizes": "1280x720",
             "type": "image/png",
             "form_factor": "wide",
-            "label": "Pomozone Desktop View"
+            "label": "PomoZone Desktop View"
         },
         {
             "src": "/screenshot-mobile.png",
             "sizes": "540x720",
             "type": "image/png",
             "form_factor": "narrow",
-            "label": "Pomozone Mobile View"
+            "label": "PomoZone Mobile View"
         }
     ]
 }

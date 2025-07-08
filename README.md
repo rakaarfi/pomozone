@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🖥️ PomoZone - A Focus Terminal for Developers
 
-## Getting Started
+![Image](https://github.com/user-attachments/assets/c04fa308-6053-418c-94af-d96327713f14)
 
-First, run the development server:
+**Live Demo:** [**pomozone.rakaarfi.dev**](https://pomozone.rakaarfi.dev)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+PomoZone is a web-based Pomodoro application that merges the classic time management technique with an immersive, terminal-style coding ambiance. It's designed specifically for developers, freelancers, and anyone who loves the "deep work" vibe to help them focus and track their progress effectively.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ✨ Key Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+-   **🕒 Customizable Focus Timer:** A classic Pomodoro timer (25/5/15) with fully customizable durations available through the settings menu.
+-   **💻 Immersive Terminal UI:** An interface inspired by modern IDEs and terminals, complete with a dark theme and a monospace font for an authentic coding feel.
+-   **🧠 Mini-Challenges:** Interactive quizzes about coding and logic appear during break sessions to keep your mind sharp and refreshed.
+-   **✍️ Git-Style Checkpoints:** After completing a cycle of 4 focus sessions, log your accomplishments in a `git commit` format to meaningfully track your progress.
+-   **🎵 Ambient Sounds:** Choose from a selection of background sounds (mechanical keyboard, rain, etc.) to create your perfect work environment.
+-   **📊 Session Statistics:** Track your total completed focus sessions and review your "commit" history on the statistics page.
+-   **🚀 PWA Ready:** Install PomoZone directly to your desktop or mobile device for quick, native-app-like access and offline capabilities.
+-   **💾 Local Persistence:** All your settings and session history are automatically saved in your browser using `localStorage`.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Category         | Technology                               |
+|------------------|------------------------------------------|
+| Framework        | **Next.js 14+** (App Router)             |
+| Language         | **TypeScript**                           |
+| Styling          | **Tailwind CSS**                         |
+| State Management | **Zustand**                              |
+| Animations       | **Framer Motion**                        |
+| Custom UI        | **Headless UI** (Tabs, Listbox)          |
+| Audio Engine     | **Howler.js**                            |
+| PWA              | **next-pwa**                             |
+| Deployment       | **Vercel**                               |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🚀 Running Locally
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To get a local copy up and running, follow these simple steps.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-username/pomozone.git
+    # Replace with your repository URL
+    cd pomozone
+    ```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+3.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
+4.  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
