@@ -51,7 +51,7 @@ interface TimerActions {
     incrementSessions: () => void;
 }
 
-type StoredState = Pick<TimerState, 'settings' | 'soundSettings' | 'sessionsCompleted' | 'checkpoints'>;
+type StoredState = Pick<TimerState, 'settings' | 'soundSettings' | 'sessionsCompleted' | 'checkpoints' | 'mode' | 'timeLeft' | 'isRunning'>;
 
 const initialState: TimerState = {
     mode: 'focus',
@@ -164,15 +164,18 @@ export const useTimerStore = create(
                 soundSettings: state.soundSettings,
                 sessionsCompleted: state.sessionsCompleted,
                 checkpoints: state.checkpoints,
+                mode: state.mode,
+                timeLeft: state.timeLeft,
+                isRunning: state.isRunning,
             }),
-            onRehydrateStorage: () => (state, error) => {
-                if (state) {
-                    const currentMode = state.mode;
-                    const savedSettings = state.settings;
-                    state.timeLeft = savedSettings[currentMode] * 60;
-                    state.isRunning = false;
-                }
-            },
+            // onRehydrateStorage: () => (state, error) => {
+            //     if (state) {
+            //         const currentMode = state.mode;
+            //         const savedSettings = state.settings;
+            //         state.timeLeft = savedSettings[currentMode] * 60;
+            //         state.isRunning = false;
+            //     }
+            // },
         }
     )
 );
