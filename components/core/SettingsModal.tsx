@@ -101,23 +101,27 @@ export const SettingsModal = () => {
 
     const tabCategories = ['Timer', 'Sound'];
 
+    // Helper class untuk input agar konsisten
+    const inputStyles = "w-full rounded-md border-[var(--border-color)] bg-black/5 dark:bg-white/5 p-2 text-[--text] focus:border-[--accent] focus:ring-[--accent] disabled:opacity-50";
+
     return (
         <Modal isOpen={isOpen} onClose={closeModal} title="⚙️ Settings">
             <form onSubmit={handleSubmit} className="w-full">
                 <Tab.Group>
-                    <Tab.List className="flex space-x-1 rounded-lg bg-white/5 p-1">
+                    <Tab.List
+                        className="flex space-x-1 rounded-lg bg-black/5 dark:bg-white/5 p-1">
                         {tabCategories.map((category) => (
                             <Tab key={category} as={Fragment}>
                                 {({ selected }) => (
                                     <button
                                         className="relative w-full rounded-lg py-2.5 text-sm font-medium leading-5 transition-colors duration-200 focus:outline-none"
                                     >
-                                        <span className={selected ? 'text-white' : 'text-[--comment] hover:text-white'}>
+                                        <span className={selected ? 'text-[--text]' : 'text-[--comment] hover:text-[--text]'}>
                                             {category}
                                         </span>
                                         {selected && (
                                             <motion.div
-                                                className="absolute inset-0 bg-white/10 rounded-lg"
+                                                className="absolute inset-0 bg-black/10 dark:bg-white/10 rounded-lg"
                                                 layoutId="active-tab-highlight-settings"
                                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                             />
@@ -128,13 +132,9 @@ export const SettingsModal = () => {
                         ))}
                     </Tab.List>
 
-                    {/* Konten Panel Tab */}
                     <Tab.Panels className="mt-2 min-h-[180px]">
-                        {/* Panel 1: Timer Settings */}
                         <Tab.Panel className="rounded-xl p-3 focus:outline-none">
-                            {/* Input durasi timer */}
                             <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-3">
-                                {/* Grup 1: Focus */}
                                 <div className="space-y-1">
                                     <label htmlFor="focus" className="block text-sm font-medium text-[--comment]">
                                         Focus (minutes)
@@ -147,10 +147,9 @@ export const SettingsModal = () => {
                                         onChange={handleTimerChange}
                                         min="1"
                                         disabled={isSubmitting}
-                                        className="w-full rounded-md border-white/10 bg-white/5 p-2 text-[--text] focus:border-[--accent] focus:ring-[--accent] disabled:opacity-50"
+                                        className={inputStyles}
                                     />
                                 </div>
-                                {/* Grup 2: Short Break */}
                                 <div className="space-y-1">
                                     <label htmlFor="shortBreak" className="block text-sm font-medium text-[--comment]">
                                         Short Break
@@ -163,10 +162,9 @@ export const SettingsModal = () => {
                                         onChange={handleTimerChange}
                                         min="1"
                                         disabled={isSubmitting}
-                                        className="w-full rounded-md border-white/10 bg-white/5 p-2 text-[--text] focus:border-[--accent] focus:ring-[--accent] disabled:opacity-50"
+                                        className={inputStyles}
                                     />
                                 </div>
-                                {/* Grup 3: Long Break */}
                                 <div className="space-y-1">
                                     <label htmlFor="longBreak" className="block text-sm font-medium text-[--comment]">
                                         Long Break
@@ -179,16 +177,14 @@ export const SettingsModal = () => {
                                         onChange={handleTimerChange}
                                         min="1"
                                         disabled={isSubmitting}
-                                        className="w-full rounded-md border-white/10 bg-white/5 p-2 text-[--text] focus:border-[--accent] focus:ring-[--accent] disabled:opacity-50"
+                                        className={inputStyles}
                                     />
                                 </div>
                             </div>
                         </Tab.Panel>
 
-                        {/* Panel 2: Sound Settings */}
                         <Tab.Panel className="rounded-xl p-3 focus:outline-none">
                             <div className="space-y-4">
-                                {/* Toggle Switch dengan Tema App */}
                                 <div className="flex items-center justify-between">
                                     <label
                                         htmlFor="sound-toggle"
@@ -203,18 +199,18 @@ export const SettingsModal = () => {
                                         aria-checked={formState.sound.enabled}
                                         onClick={() => handleSoundChange({ enabled: !formState.sound.enabled })}
                                         className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full border transition-all duration-200 ease-in-out ${formState.sound.enabled
-                                            ? 'bg-[--accent] border-[--accent]'
-                                            : 'bg-white/5 border-white/20 hover:bg-white/10'
+                                                ? 'bg-[--accent] border-[--accent]'
+                                                : 'border-[var(--border-color)] bg-black/10 dark:bg-white/5 dark:border-white/20 dark:hover:bg-white/10'
                                             }`}
                                     >
                                         <span
-                                            className={`${formState.sound.enabled ? 'translate-x-[23px]' : 'translate-x-[3px]'
-                                                } inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out`}
+                                            className={`inline-block h-4 w-4 transform rounded-full shadow-sm transition-transform duration-200 ease-in-out ${formState.sound.enabled
+                                                    ? 'translate-x-[23px] bg-[var(--text)]'
+                                                    : 'translate-x-[3px] bg-[var(--text)] dark:bg-white'
+                                                }`}
                                         />
                                     </button>
                                 </div>
-
-                                {/* Dropdown Kustom dengan Headless UI */}
                                 <Listbox
                                     value={formState.sound.ambientSound}
                                     onChange={(value) => handleSoundChange({ ambientSound: value })}
@@ -225,10 +221,11 @@ export const SettingsModal = () => {
                                             }`}>
                                             Focus Ambient Sound
                                         </Listbox.Label>
-                                        <Listbox.Button className={`relative mt-1 w-full cursor-default rounded-md border py-2 pl-3 pr-10 text-left transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[--accent] ${formState.sound.enabled
-                                            ? 'border-white/10 bg-white/5 text-[--text] focus-visible:border-[--accent]'
-                                            : 'border-white/5 bg-white/5 text-[--comment] opacity-50 cursor-not-allowed'
-                                            }`}>
+                                        <Listbox.Button
+                                            className={`relative mt-1 w-full cursor-default rounded-md border py-2 pl-3 pr-10 text-left transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[--accent] ${formState.sound.enabled
+                                                ? 'border-[var(--border-color)] bg-black/5 dark:bg-white/5 text-[--text] focus-visible:border-[--accent]'
+                                                : 'border-transparent bg-black/5 dark:bg-white/5 text-[--comment] opacity-50 cursor-not-allowed'
+                                                }`}>
                                             <span className="block truncate capitalize">{formState.sound.ambientSound}</span>
                                             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-[--comment]">
@@ -242,7 +239,7 @@ export const SettingsModal = () => {
                                                     initial={{ opacity: 0, y: -10 }}
                                                     animate={{ opacity: 1, y: 0 }}
                                                     exit={{ opacity: 0, y: -10 }}
-                                                    className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-[#161b22] py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-10"
+                                                    className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-[var(--bg-subtle)] py-1 text-base shadow-lg ring-1 ring-black/10 dark:ring-white/10 focus:outline-none sm:text-sm z-10"
                                                 >
                                                     {ambientSoundsList.map((sound) => (
                                                         <Listbox.Option
@@ -265,8 +262,9 @@ export const SettingsModal = () => {
                         </Tab.Panel>
                     </Tab.Panels>
                 </Tab.Group>
-                {/* --- Area Tombol Save & Notifikasi --- */}
-                <div className="flex items-center justify-end pt-4 mt-4 border-t border-white/10">
+
+                <div
+                    className="flex items-center justify-end pt-4 mt-4 border-t border-[var(--border-color)]">
                     <div className="flex-1 mr-4 h-5 flex items-center">
                         <AnimatePresence>
                             {showSavedConfirmation && (
@@ -296,18 +294,15 @@ export const SettingsModal = () => {
 
                     <button
                         type="submit"
-                        // Gunakan helper boolean untuk disabled
                         disabled={!isFormDirty || isSubmitting}
                         className={`flex items-center justify-center gap-2 w-36 rounded-md px-4 py-2 text-sm font-bold transition-all duration-200 disabled:cursor-not-allowed
-        ${
-                            // Urutan prioritas sangat penting di sini
-                            isSubmitting
-                                ? 'bg-white/10 text-[--comment] opacity-100'
+        ${isSubmitting
+                                ? 'bg-black/10 dark:bg-white/10 text-[--comment] opacity-100'
                                 : showSavedConfirmation
                                     ? 'bg-[--success] text-white'
                                     : isFormDirty
                                         ? 'bg-[--accent] text-[--bg] hover:opacity-90'
-                                        : 'bg-white/10 text-[--comment] opacity-50'
+                                        : 'bg-black/10 dark:bg-white/10 text-[--comment] opacity-50'
                             }
     `}
                     >

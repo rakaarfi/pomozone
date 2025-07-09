@@ -10,6 +10,9 @@
   --success: #1a7f37;
   --error: #cf222e;
 
+  --bg-subtle: #f6f8fa;
+  --border-color: #949ea7;
+
   --background: var(--bg);
   --foreground: var(--text);
   --font-mono: 'Fira Code', monospace;

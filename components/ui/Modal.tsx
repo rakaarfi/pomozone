@@ -27,14 +27,15 @@ export const Modal = ({ isOpen, onClose, children, title }: ModalProps) => {
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
             onClick={onClose}
         >
             <div
-                className="relative w-full max-w-lg rounded-lg bg-[#161b22]/80 p-6 shadow-2xl ring-1 ring-white/20"
+                className="relative w-full max-w-lg rounded-lg bg-[var(--bg-subtle)] p-6 shadow-2xl ring-1 ring-[var(--border-color)]"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div 
+                    className="flex items-center justify-between border-b border-[var(--border-color)] pb-4">
                     <h2 className="flex items-center gap-2 text-lg font-bold text-[--text]">
                         {title}
                     </h2>
