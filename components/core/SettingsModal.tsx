@@ -131,7 +131,7 @@ export const SettingsModal = () => {
                         ))}
                     </Tab.List>
 
-                    <Tab.Panels className="mt-2 min-h-[180px]">
+                    <Tab.Panels className="mt-2 sm:min-h-[180px] min-h-[280px]">
                         <Tab.Panel className="rounded-xl p-3 focus:outline-none">
                             <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-3">
                                 <div className="space-y-1">
@@ -257,6 +257,20 @@ export const SettingsModal = () => {
                         </Tab.Panel>
                     </Tab.Panels>
                 </Tab.Group>
+
+                <div className="mt-6 border-t border-[var(--border-color)] pt-4">
+                    <h3 className="text-sm font-bold text-[var(--text)]">Keyboard Shortcuts</h3>
+                    <div className="mt-2 space-y-1 text-sm text-[--comment]">
+                        <p className="flex justify-between">
+                            <span>Start / Pause Timer</span>
+                            <kbd className="rounded bg-[var(--bg-interactive)] px-2 py-0.5 font-sans text-xs font-semibold text-[var(--text)]">Space</kbd>
+                        </p>
+                        <p className="flex justify-between">
+                            <span>Reset Timer</span>
+                            <kbd className="rounded bg-[var(--bg-interactive)] px-2 py-0.5 font-sans text-xs font-semibold text-[var(--text)]">R</kbd>
+                        </p>
+                    </div>
+                </div>
 
                 <div
                     className="flex items-center justify-end pt-4 mt-4 border-t border-[var(--border-color)]">

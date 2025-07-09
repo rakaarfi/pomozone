@@ -14,10 +14,12 @@ import { SettingsModal } from '../components/core/SettingsModal';
 import { useAudioController } from '../hooks/useAudioController';
 import { ThemeToggleButton } from '@/components/core/ThemeToggleButton';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
 export default function Home() {
   useTimer();
   useAudioController();
+  useKeyboardShortcuts();
   const { requestPermission } = useNotifications();
 
   const isRunning = useTimerStore((state) => state.isRunning);
@@ -87,18 +89,31 @@ export default function Home() {
 
         {/* 4. Area Kontrol di paling bawah */}
         <div className="flex items-center justify-center gap-4">
-          <button
-            onClick={handleResetClick}
-            className="px-4 py-3 text-sm font-bold uppercase text-[--comment] transition-colors hover:text-[--text]"
-          >
-            Reset
-          </button>
-          <button
-            onClick={isRunning ? pauseTimer : startTimer}
-            className="w-40 rounded-md bg-[--accent] py-3 text-lg font-bold uppercase text-[--bg] transition-opacity hover:opacity-90"
-          >
-            {isRunning ? 'Pause' : 'Start'}
-          </button>
+          {/* Tombol Reset dengan Tooltip */}
+          <div className="group relative">
+            <button
+              onClick={handleResetClick}
+              className="px-4 py-3 text-sm font-bold uppercase text-[--comment] transition-colors hover:text-[--text]"
+            >
+              Reset
+            </button>
+            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[var(--bg-subtle)] px-2 py-1 text-xs text-[--text] opacity-0 shadow-lg ring-1 ring-[var(--border-color)] transition-opacity group-hover:opacity-100">
+              Shortcut: <kbd className="font-sans font-semibold">R</kbd>
+            </span>
+          </div>
+
+          {/* Tombol Start/Pause dengan Tooltip */}
+          <div className="group relative">
+            <button
+              onClick={isRunning ? pauseTimer : startTimer}
+              className="w-40 rounded-md bg-[--accent] py-3 text-lg font-bold uppercase text-[--bg] transition-opacity hover:opacity-90"
+            >
+              {isRunning ? 'Pause' : 'Start'}
+            </button>
+            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max rounded-md bg-[var(--bg-subtle)] px-2 py-1 text-xs text-[--text] opacity-0 shadow-lg ring-1 ring-[var(--border-color)] transition-opacity group-hover:opacity-100">
+              Shortcut: <kbd className="font-sans font-semibold">Space</kbd>
+            </span>
+          </div>
         </div>
 
       </div>
