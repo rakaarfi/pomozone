@@ -2,6 +2,7 @@
 'use client';
 
 import { useTimerStore } from '../../store/timerStore';
+import { motion } from 'framer-motion';
 
 type TimerMode = 'focus' | 'shortBreak' | 'longBreak';
 
@@ -26,19 +27,32 @@ export const ModeSelector = () => {
     };
 
     return (
-        <div className="flex justify-center gap-2 rounded-full bg-[--bg] p-1.5 shadow-inner">
+        <div 
+            className="flex justify-center gap-1 rounded-full p-1.5" 
+            style={{ backgroundColor: 'var(--bg-selector)' }}
+        >
             {modes.map((m) => (
                 <button
                     key={m.id}
                     onClick={() => handleModeChange(m.id)}
-                    className={`px-4 py-1.5 text-sm font-semibold rounded-full transition-colors
-            ${mode === m.id
-                            ? 'bg-[--accent] text-[--bg]'
-                            : 'text-[--comment] hover:text-[--text]'
+                    className={`relative w-32 rounded-full px-4 py-1.5 text-sm font-semibold transition-colors
+                        ${mode === m.id 
+                            ? 'text-[var(--bg)]'
+                            : 'text-[var(--comment)] hover:text-[var(--text)]'
                         }
-          `}
+                    `}
+                    style={{ WebkitTapHighlightColor: "transparent" }}
                 >
-                    {m.label}
+                        
+                    {mode === m.id && (
+                        <motion.div
+                            layoutId="active-mode-pill"
+                            className="absolute inset-0 rounded-full bg-[var(--accent)]"
+                            transition={{ type: "spring", stiffness: 350, damping: 35 }}
+                        />
+                    )}
+
+                    <span className="relative z-10">{m.label}</span>
                 </button>
             ))}
         </div>
