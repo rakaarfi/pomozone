@@ -1,10 +1,11 @@
 // app/page.tsx
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useTimerStore } from '../store/timerStore';
 import { useTimer } from '../hooks/useTimer';
 import { ModeSelector } from '../components/core/ModeSelector';
-import { TerminalOutput } from '../components/core/TerminalOutput'; // Impor komponen baru
+import { TerminalOutput } from '../components/core/TerminalOutput';
 import { formatTime } from '../lib/utils'; // Impor dari file utilitas
 import { ChallengeModal } from '@/components/core/ChallengeModal';
 import { CheckpointModal } from '@/components/core/CheckpointModal';
@@ -22,6 +23,13 @@ export default function Home() {
   const pauseTimer = useTimerStore((state) => state.pauseTimer);
   const resetTimer = useTimerStore((state) => state.resetTimer);
   const openSettingsModal = useTimerStore((state) => state.openSettingsModal);
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  useEffect(() => {
+    // Efek ini hanya berjalan di client-side, setelah render awal.
+    // Saat ini berjalan, kita tahu Zustand sudah (atau akan segera) terhidrasi.
+    setHasHydrated(true);
+  }, []);
 
   const handleResetClick = () => {
     // Jika timer berjalan, minta konfirmasi
@@ -57,10 +65,16 @@ export default function Home() {
         <ModeSelector />
 
         {/* 2. Area Tampilan Utama */}
-        <div className="text-center">
-          <h1 className="text-8xl font-bold text-[--text] tracking-tighter">
-            {formatTime(timeLeft)}
-          </h1>
+        <div className="text-center h-[96px] flex items-center justify-center">
+          {hasHydrated ? (
+            <h1 className="text-8xl font-bold text-[--text] tracking-tighter">
+              {formatTime(timeLeft)}
+            </h1>
+          ) : (
+            <h1 className="text-8xl font-bold text-[--comment] tracking-tighter">
+              --:--
+            </h1>
+          )}
         </div>
 
         {/* 3. Output Terminal Dinamis */}
