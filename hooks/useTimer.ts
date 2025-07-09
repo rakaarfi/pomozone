@@ -4,6 +4,7 @@
 import { useEffect, useRef } from 'react';
 import { useTimerStore } from '../store/timerStore';
 import audioManager from '../lib/audioManager';
+import { useNotifications } from './useNotifications';
 
 export const useTimer = () => {
     const isRunning = useTimerStore((state) => state.isRunning);
@@ -17,6 +18,7 @@ export const useTimer = () => {
     const openChallengeModal = useTimerStore((state) => state.openChallengeModal);
     const soundEnabled = useTimerStore((state) => state.soundSettings.enabled);
     const ambientSound = useTimerStore((state) => state.soundSettings.ambientSound);
+    const { sendNotification } = useNotifications();
 
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -41,23 +43,32 @@ export const useTimer = () => {
     // useEffect untuk pergantian mode otomatis
     useEffect(() => {
         if (timeLeft === 0) {
-            const currentState = useTimerStore.getState(); 
-            
+            const currentState = useTimerStore.getState();
+
             if (currentState.mode === 'focus') {
                 currentState.incrementSessions();
-                
+
                 const nextSessionsCount = useTimerStore.getState().sessionsCompleted;
 
                 if (nextSessionsCount > 0 && nextSessionsCount % 4 === 0) {
+                    sendNotification("Focus session complete!", {
+                        body: "Great job! Time for a well-deserved long break."
+                    });
                     currentState.openCheckpointModal();
                     currentState.switchMode('longBreak');
                 } else {
+                    sendNotification("Focus session complete!", {
+                        body: "Time's up! Take a short break to recharge."
+                    });
                     currentState.openChallengeModal();
                     currentState.switchMode('shortBreak');
                 }
             } else {
+                sendNotification("Break's over!", {
+                    body: "Time to get back in the zone. Let's do this!"
+                });
                 currentState.switchMode('focus');
             }
         }
-    }, [timeLeft]);
+    }, [timeLeft, sendNotification]);
 };

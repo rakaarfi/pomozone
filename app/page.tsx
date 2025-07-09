@@ -13,10 +13,12 @@ import Link from 'next/link';
 import { SettingsModal } from '../components/core/SettingsModal';
 import { useAudioController } from '../hooks/useAudioController';
 import { ThemeToggleButton } from '@/components/core/ThemeToggleButton';
+import { useNotifications } from '@/hooks/useNotifications';
 
 export default function Home() {
   useTimer();
   useAudioController();
+  const { requestPermission } = useNotifications();
 
   const isRunning = useTimerStore((state) => state.isRunning);
   const timeLeft = useTimerStore((state) => state.timeLeft);
@@ -28,7 +30,12 @@ export default function Home() {
 
   useEffect(() => {
     setHasHydrated(true);
-  }, []);
+    const permissionTimeout = setTimeout(() => {
+      requestPermission();
+    }, 3000);
+
+    return () => clearTimeout(permissionTimeout);
+  }, [requestPermission]);
 
   const handleResetClick = () => {
     if (isRunning) {
