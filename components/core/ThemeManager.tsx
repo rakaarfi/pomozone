@@ -6,9 +6,7 @@ import { useTimerStore } from '../../store/timerStore';
 
 export const ThemeManager = () => {
     const theme = useTimerStore((state) => state.theme);
-    // const setTheme = useTimerStore((state) => state.setTheme);
 
-    // Fungsi untuk mengecek apakah system dalam dark mode
     const getSystemTheme = useCallback(() => {
         if (typeof window !== 'undefined') {
             return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -16,7 +14,6 @@ export const ThemeManager = () => {
         return 'light';
     }, []);
 
-    // Fungsi untuk apply theme ke DOM
     const applyTheme = useCallback((currentTheme: string) => {
         if (typeof window === 'undefined') return;
 
@@ -26,16 +23,13 @@ export const ThemeManager = () => {
 
         root.classList.toggle('dark', isDark);
 
-        // Debug log
         console.log('Theme applied:', { currentTheme, isDark, systemTheme: getSystemTheme() });
     }, [getSystemTheme]);
 
-    // Effect untuk apply theme saat pertama kali load dan saat theme berubah
     useEffect(() => {
         applyTheme(theme);
     }, [theme, applyTheme]);
 
-    // Effect untuk listen ke system theme changes
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
@@ -48,7 +42,6 @@ export const ThemeManager = () => {
             }
         };
 
-        // Listen untuk perubahan system theme
         mediaQuery.addEventListener('change', handleSystemThemeChange);
 
         return () => {
@@ -56,9 +49,7 @@ export const ThemeManager = () => {
         };
     }, [theme, applyTheme]);
 
-    // Effect untuk initialize theme pada first load
     useEffect(() => {
-        // Pastikan theme di-apply dengan benar saat component mount
         applyTheme(theme);
     }, [applyTheme, theme]);
 
