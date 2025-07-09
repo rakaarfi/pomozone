@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react';
 import { useTimerStore } from '../store/timerStore';
 import audioManager from '../lib/audioManager';
 import { useNotifications } from './useNotifications';
+import { formatTime } from '../lib/utils';
 
 export const useTimer = () => {
     const isRunning = useTimerStore((state) => state.isRunning);
@@ -18,7 +19,10 @@ export const useTimer = () => {
     const openChallengeModal = useTimerStore((state) => state.openChallengeModal);
     const soundEnabled = useTimerStore((state) => state.soundSettings.enabled);
     const ambientSound = useTimerStore((state) => state.soundSettings.ambientSound);
+
     const { sendNotification } = useNotifications();
+
+    const originalTitleRef = useRef(typeof document !== 'undefined' ? document.title : 'PomoZone');
 
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -71,4 +75,33 @@ export const useTimer = () => {
             }
         }
     }, [timeLeft, sendNotification]);
+
+    // useEffect untuk judul tab dinamis
+    useEffect(() => {
+        const originalTitle = originalTitleRef.current;
+
+        const formatModeLabel = (m: typeof mode) => {
+            switch (m) {
+                case 'focus':
+                    return 'Focus';
+                case 'shortBreak':
+                    return 'Short Break';
+                case 'longBreak':
+                    return 'Long Break';
+                default:
+                    return '';
+            }
+        };
+
+        if (isRunning) {
+            document.title = `(${formatTime(timeLeft)}) ${formatModeLabel(mode)} - PomoZone`;
+        } else {
+            document.title = originalTitle;
+        }
+
+        // Fungsi cleanup
+        return () => {
+            document.title = originalTitle;
+        };
+    }, [isRunning, timeLeft, mode]);
 };
