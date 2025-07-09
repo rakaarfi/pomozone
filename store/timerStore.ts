@@ -32,6 +32,7 @@ interface TimerState {
     isSettingsModalOpen: boolean;
     soundSettings: SoundSettings;
     theme: 'system' | 'light' | 'dark';
+    currentTask: string;
 }
 
 interface TimerActions {
@@ -51,6 +52,7 @@ interface TimerActions {
     updateSoundSettings: (newSettings: Partial<SoundSettings>) => void;
     incrementSessions: () => void;
     setTheme: (theme: TimerState['theme']) => void;
+    setCurrentTask: (task: string) => void;
 }
 
 type StoredState = Pick<TimerState, 'settings' | 'soundSettings' | 'sessionsCompleted' | 'checkpoints' | 'mode' | 'timeLeft' | 'isRunning' | 'theme'>;
@@ -74,6 +76,7 @@ const initialState: TimerState = {
         enabled: true,
     },
     theme: 'system',
+    currentTask: '',
 };
 
 export const useTimerStore = create(
@@ -122,6 +125,8 @@ export const useTimerStore = create(
                 set((state) => ({ sessionsCompleted: state.sessionsCompleted + 1 }));
             },
 
+            setCurrentTask: (task) => set({ currentTask: task }),
+
             switchMode: (newMode: TimerMode) => {
                 const { settings } = get();
 
@@ -143,6 +148,7 @@ export const useTimerStore = create(
                     mode: newMode,
                     isRunning: false,
                     timeLeft: newTimeLeft,
+                    currentTask: '',
                 });
             },
 
@@ -151,8 +157,10 @@ export const useTimerStore = create(
                 set((state) => ({
                     isRunning: false,
                     timeLeft: state.settings[currentMode] * 60,
+                    currentTask: currentMode === 'focus' ? state.currentTask : '',
                 }));
             },
+
             updateSoundSettings: (newSettings) => {
                 set((state) => ({
                     soundSettings: { ...state.soundSettings, ...newSettings },
@@ -171,7 +179,7 @@ export const useTimerStore = create(
                 mode: state.mode,
                 timeLeft: state.timeLeft,
                 isRunning: state.isRunning,
-                theme: state.theme, 
+                theme: state.theme,
             }),
         }
     )

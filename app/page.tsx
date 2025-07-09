@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { useTimerStore } from '../store/timerStore';
 import { useTimer } from '../hooks/useTimer';
 import { ModeSelector } from '../components/core/ModeSelector';
-import { TerminalOutput } from '../components/core/TerminalOutput';
 import { formatTime } from '../lib/utils';
 import { ChallengeModal } from '@/components/core/ChallengeModal';
 import { CheckpointModal } from '@/components/core/CheckpointModal';
@@ -15,6 +14,7 @@ import { useAudioController } from '../hooks/useAudioController';
 import { ThemeToggleButton } from '@/components/core/ThemeToggleButton';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { StatusDisplay } from '@/components/core/StatusDisplay';
 
 export default function Home() {
   useTimer();
@@ -85,7 +85,7 @@ export default function Home() {
         </div>
 
         {/* 3. Output Terminal Dinamis */}
-        <TerminalOutput />
+        <StatusDisplay />
 
         {/* 4. Area Kontrol di paling bawah */}
         <div className="flex items-center justify-center gap-4">
