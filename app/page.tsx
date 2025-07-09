@@ -15,12 +15,14 @@ import { ThemeToggleButton } from '@/components/core/ThemeToggleButton';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { StatusDisplay } from '@/components/core/StatusDisplay';
+import { useLeaveWarning } from '@/hooks/useLeaveWarning';
 
 export default function Home() {
   useTimer();
   useAudioController();
   useKeyboardShortcuts();
   const { requestPermission } = useNotifications();
+  useLeaveWarning();
 
   const isRunning = useTimerStore((state) => state.isRunning);
   const timeLeft = useTimerStore((state) => state.timeLeft);
@@ -52,17 +54,31 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-12">
 
-      <div className="absolute top-4 right-4 flex gap-2">
+      {/* Area Header */}
+      <div className="absolute top-4 right-4 flex items-center gap-2">
         <ThemeToggleButton />
         <button
           onClick={openSettingsModal}
-          className="rounded-md bg-white/10 px-4 py-2 text-sm font-bold text-[--text] transition-colors hover:bg-white/20"
+          className="w-24 text-center rounded-md bg-white/10 px-4 py-2 text-sm font-bold text-[--text] transition-colors hover:bg-white/20"
         >
           Settings
         </button>
-        <Link href="/stats" className="rounded-md bg-white/10 px-4 py-2 text-sm font-bold text-[--text] transition-colors hover:bg-white/20">
-          Stats →
-        </Link>
+
+        <div className="group relative">
+          <Link
+            href="/stats"
+            className="block w-24 text-center rounded-md bg-white/10 px-4 py-2 text-sm font-bold text-[--text] transition-colors hover:bg-white/20"
+          >
+            Stats →
+          </Link>
+          {isRunning && (
+            <span
+              className="absolute top-full right-0 mt-2 w-max rounded-md bg-[var(--bg-subtle)] px-2 py-1 text-xs text-[--text] opacity-0 shadow-lg ring-1 ring-[var(--border-color)] transition-opacity group-hover:opacity-100"
+            >
+              Heads up: This will pause your timer.
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Panel Terminal Utama */}
