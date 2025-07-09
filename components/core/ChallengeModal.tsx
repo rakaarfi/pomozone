@@ -48,12 +48,15 @@ export const ChallengeModal = () => {
                         const isCorrect = option === selectedChallenge.answer;
                         const isSelected = option === selectedAnswer;
 
-                        let buttonStyle = 'bg-white/5 hover:bg-white/10';
+                        let buttonStyle = 'bg-[var(--bg-interactive)] hover:bg-[var(--bg-interactive-hover)]';
+                        
                         if (isAnswered) {
                             if (isCorrect) {
                                 buttonStyle = 'bg-green-500/20 text-[--success]';
                             } else if (isSelected) {
                                 buttonStyle = 'bg-red-500/20 text-[--error]';
+                            } else {
+                                buttonStyle = 'bg-[var(--bg-interactive)] opacity-50';
                             }
                         }
 
@@ -62,7 +65,7 @@ export const ChallengeModal = () => {
                                 key={option}
                                 onClick={() => handleAnswer(option)}
                                 disabled={isAnswered}
-                                className={`w-full rounded-md p-3 text-left transition-colors ${buttonStyle}`}
+                                className={`w-full rounded-md p-3 text-left transition-all ${buttonStyle}`}
                             >
                                 {option}
                             </button>
@@ -71,7 +74,7 @@ export const ChallengeModal = () => {
                 </div>
 
                 {isAnswered && (
-                    <div className="mt-4 rounded-md border border-white/10 bg-white/5 p-4">
+                    <div className="mt-4 rounded-md border border-[var(--border-color)] bg-[var(--bg-interactive)] p-4">
                         <p className="font-bold text-[--accent]">Explanation:</p>
                         <p className="text-[--comment]">{selectedChallenge.explanation}</p>
                     </div>
