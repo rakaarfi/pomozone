@@ -11,11 +11,37 @@
   --error: #cf222e;
 
   --bg-subtle: #f6f8fa;
-  --border-color: #949ea7;
+  --border-color: #d0d7de;
+  /* Kembalikan ke warna light mode yang benar */
+
+  /* Variabel BARU untuk UI interaktif */
+  --bg-interactive: rgba(0, 0, 0, 0.05);
+  /* Hitam transparan */
+  --bg-interactive-hover: rgba(0, 0, 0, 0.1);
 
   --background: var(--bg);
   --foreground: var(--text);
   --font-mono: 'Fira Code', monospace;
+}
+
+/* Dark mode variables */
+html.dark {
+  --bg: #0d1117;
+  --bg-subtle: #21262d;
+  --text: #c9d1d9;
+  --accent: #58a6ff;
+  --comment: #8b949e;
+  --success: #3fb950;
+  --error: #f85149;
+  --border-color: #30363d;
+
+  /* Variabel BARU untuk UI interaktif (versi dark) */
+  /* Putih transparan */
+  --bg-interactive: rgba(255, 255, 255, 0.05);
+  --bg-interactive-hover: rgba(255, 255, 255, 0.1);
+
+  --background: #0d1117;
+  --foreground: #c9d1d9;
 }
 
 @theme inline {
@@ -24,7 +50,7 @@
   --font-sans: var(--font-geist-sans);
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0d1117;
     --bg-subtle: #21262d;
@@ -37,7 +63,7 @@
     --background: var(--bg);
     --foreground: var(--text);
   }
-}
+} */
 
 body {
   background: var(--background);
@@ -46,6 +72,11 @@ body {
 
   font-variant-ligatures: common-ligatures;
   font-feature-settings: "liga" on;
+  /* transition: background-color 0.2s ease, color 0.2s ease; */
+}
+
+.theme-transition {
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 @layer base {

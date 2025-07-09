@@ -102,26 +102,25 @@ export const SettingsModal = () => {
     const tabCategories = ['Timer', 'Sound'];
 
     // Helper class untuk input agar konsisten
-    const inputStyles = "w-full rounded-md border-[var(--border-color)] bg-black/5 dark:bg-white/5 p-2 text-[--text] focus:border-[--accent] focus:ring-[--accent] disabled:opacity-50";
+    const inputStyles = "w-full rounded-md border-[var(--border-color)] bg-[var(--bg-interactive)] p-2 text-[--text] focus:border-[--accent] focus:ring-[--accent] disabled:opacity-50";
 
     return (
         <Modal isOpen={isOpen} onClose={closeModal} title="⚙️ Settings">
             <form onSubmit={handleSubmit} className="w-full">
                 <Tab.Group>
                     <Tab.List
-                        className="flex space-x-1 rounded-lg bg-black/5 dark:bg-white/5 p-1">
+                        className="flex space-x-1 rounded-lg bg-[var(--bg-interactive)] p-1">
                         {tabCategories.map((category) => (
                             <Tab key={category} as={Fragment}>
                                 {({ selected }) => (
                                     <button
-                                        className="relative w-full rounded-lg py-2.5 text-sm font-medium leading-5 transition-colors duration-200 focus:outline-none"
-                                    >
+                                        className="relative w-full rounded-lg py-2.5 text-sm font-medium leading-5 transition-colors duration-200 focus:outline-none">
                                         <span className={selected ? 'text-[--text]' : 'text-[--comment] hover:text-[--text]'}>
                                             {category}
                                         </span>
                                         {selected && (
                                             <motion.div
-                                                className="absolute inset-0 bg-black/10 dark:bg-white/10 rounded-lg"
+                                                className="absolute inset-0 bg-[var(--bg-interactive-hover)] rounded-lg"
                                                 layoutId="active-tab-highlight-settings"
                                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                             />
@@ -198,16 +197,13 @@ export const SettingsModal = () => {
                                         role="switch"
                                         aria-checked={formState.sound.enabled}
                                         onClick={() => handleSoundChange({ enabled: !formState.sound.enabled })}
-                                        className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full border transition-all duration-200 ease-in-out ${formState.sound.enabled
-                                                ? 'bg-[--accent] border-[--accent]'
-                                                : 'border-[var(--border-color)] bg-black/10 dark:bg-white/5 dark:border-white/20 dark:hover:bg-white/10'
+                                        className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full border-2 border-transparent transition-all duration-200 ease-in-out ${formState.sound.enabled
+                                            ? 'bg-[var(--accent)]'
+                                            : 'bg-[var(--bg-interactive)] hover:bg-[var(--bg-interactive-hover)]'
                                             }`}
                                     >
                                         <span
-                                            className={`inline-block h-4 w-4 transform rounded-full shadow-sm transition-transform duration-200 ease-in-out ${formState.sound.enabled
-                                                    ? 'translate-x-[23px] bg-[var(--text)]'
-                                                    : 'translate-x-[3px] bg-[var(--text)] dark:bg-white'
-                                                }`}
+                                            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${formState.sound.enabled ? 'translate-x-[1.3rem]' : 'translate-x-1'}`}
                                         />
                                     </button>
                                 </div>
@@ -223,8 +219,8 @@ export const SettingsModal = () => {
                                         </Listbox.Label>
                                         <Listbox.Button
                                             className={`relative mt-1 w-full cursor-default rounded-md border py-2 pl-3 pr-10 text-left transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[--accent] ${formState.sound.enabled
-                                                ? 'border-[var(--border-color)] bg-black/5 dark:bg-white/5 text-[--text] focus-visible:border-[--accent]'
-                                                : 'border-transparent bg-black/5 dark:bg-white/5 text-[--comment] opacity-50 cursor-not-allowed'
+                                                ? 'border-[var(--border-color)] bg-[var(--bg-interactive)] text-[--text] focus-visible:border-[--accent]'
+                                                : 'border-transparent bg-[var(--bg-interactive)] text-[--comment] opacity-50 cursor-not-allowed'
                                                 }`}>
                                             <span className="block truncate capitalize">{formState.sound.ambientSound}</span>
                                             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -239,8 +235,7 @@ export const SettingsModal = () => {
                                                     initial={{ opacity: 0, y: -10 }}
                                                     animate={{ opacity: 1, y: 0 }}
                                                     exit={{ opacity: 0, y: -10 }}
-                                                    className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-[var(--bg-subtle)] py-1 text-base shadow-lg ring-1 ring-black/10 dark:ring-white/10 focus:outline-none sm:text-sm z-10"
-                                                >
+                                                    className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-[var(--bg-subtle)] py-1 text-base shadow-lg ring-1 ring-[var(--border-color)] focus:outline-none sm:text-sm z-10">
                                                     {ambientSoundsList.map((sound) => (
                                                         <Listbox.Option
                                                             key={sound}

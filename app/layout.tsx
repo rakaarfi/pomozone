@@ -2,6 +2,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { PwaRegistry } from "@/components/core/PwaRegistry";
+import { ThemeManager } from "@/components/core/ThemeManager";
 
 const APP_NAME = "PomoZone";
 const APP_DESCRIPTION = "A terminal-inspired Pomodoro app to help developers code, focus, and commit to deep work sessions.";
@@ -53,14 +54,43 @@ export const viewport: Viewport = {
   themeColor: "#0d1117",
 };
 
+const ThemeInitializerScript = () => {
+  const script = `
+    (function() {
+        try {
+            const storedTheme = localStorage.getItem('pomozone-storage');
+            let theme = 'system';
+            if (storedTheme) {
+                const parsedState = JSON.parse(storedTheme);
+                theme = parsedState.state.theme || 'system';
+            }
+            
+            const root = document.documentElement;
+            const systemIsDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (theme === 'dark' || (theme === 'system' && systemIsDark)) {
+                root.classList.add('dark');
+            } else {
+                root.classList.remove('dark');
+            }
+        } catch (e) {
+            console.error('Failed to initialize theme from localStorage', e);
+        }
+    })();
+    `;
+  return <script dangerouslySetInnerHTML={{ __html: script }} />;
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
+        <ThemeInitializerScript />
+        <ThemeManager />
         {children}
         <PwaRegistry />
       </body>

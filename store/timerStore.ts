@@ -31,6 +31,7 @@ interface TimerState {
     checkpoints: Checkpoint[];
     isSettingsModalOpen: boolean;
     soundSettings: SoundSettings;
+    theme: 'system' | 'light' | 'dark';
 }
 
 interface TimerActions {
@@ -49,9 +50,10 @@ interface TimerActions {
     updateSettings: (newSettings: TimerState['settings']) => void;
     updateSoundSettings: (newSettings: Partial<SoundSettings>) => void;
     incrementSessions: () => void;
+    setTheme: (theme: TimerState['theme']) => void;
 }
 
-type StoredState = Pick<TimerState, 'settings' | 'soundSettings' | 'sessionsCompleted' | 'checkpoints' | 'mode' | 'timeLeft' | 'isRunning'>;
+type StoredState = Pick<TimerState, 'settings' | 'soundSettings' | 'sessionsCompleted' | 'checkpoints' | 'mode' | 'timeLeft' | 'isRunning' | 'theme'>;
 
 const initialState: TimerState = {
     mode: 'focus',
@@ -71,6 +73,7 @@ const initialState: TimerState = {
         ambientSound: 'keyboard',
         enabled: true,
     },
+    theme: 'system',
 };
 
 export const useTimerStore = create(
@@ -155,6 +158,7 @@ export const useTimerStore = create(
                     soundSettings: { ...state.soundSettings, ...newSettings },
                 }));
             },
+            setTheme: (theme) => set({ theme }),
         }),
         {
             name: 'pomozone-storage',
@@ -167,15 +171,8 @@ export const useTimerStore = create(
                 mode: state.mode,
                 timeLeft: state.timeLeft,
                 isRunning: state.isRunning,
+                theme: state.theme, 
             }),
-            // onRehydrateStorage: () => (state, error) => {
-            //     if (state) {
-            //         const currentMode = state.mode;
-            //         const savedSettings = state.settings;
-            //         state.timeLeft = savedSettings[currentMode] * 60;
-            //         state.isRunning = false;
-            //     }
-            // },
         }
     )
 );

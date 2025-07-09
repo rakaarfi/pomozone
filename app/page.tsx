@@ -6,12 +6,13 @@ import { useTimerStore } from '../store/timerStore';
 import { useTimer } from '../hooks/useTimer';
 import { ModeSelector } from '../components/core/ModeSelector';
 import { TerminalOutput } from '../components/core/TerminalOutput';
-import { formatTime } from '../lib/utils'; // Impor dari file utilitas
+import { formatTime } from '../lib/utils';
 import { ChallengeModal } from '@/components/core/ChallengeModal';
 import { CheckpointModal } from '@/components/core/CheckpointModal';
 import Link from 'next/link';
 import { SettingsModal } from '../components/core/SettingsModal';
 import { useAudioController } from '../hooks/useAudioController';
+import { ThemeToggleButton } from '@/components/core/ThemeToggleButton';
 
 export default function Home() {
   useTimer();
@@ -26,19 +27,15 @@ export default function Home() {
   const [hasHydrated, setHasHydrated] = useState(false);
 
   useEffect(() => {
-    // Efek ini hanya berjalan di client-side, setelah render awal.
-    // Saat ini berjalan, kita tahu Zustand sudah (atau akan segera) terhidrasi.
     setHasHydrated(true);
   }, []);
 
   const handleResetClick = () => {
-    // Jika timer berjalan, minta konfirmasi
     if (isRunning) {
       if (window.confirm('The timer is running. Are you sure you want to reset?')) {
         resetTimer();
       }
     } else {
-      // Jika tidak berjalan, reset saja langsung
       resetTimer();
     }
   };
@@ -47,6 +44,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-12">
 
       <div className="absolute top-4 right-4 flex gap-2">
+        <ThemeToggleButton />
         <button
           onClick={openSettingsModal}
           className="rounded-md bg-white/10 px-4 py-2 text-sm font-bold text-[--text] transition-colors hover:bg-white/20"
